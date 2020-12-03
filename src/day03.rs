@@ -20,10 +20,7 @@ fn main() {
 }
 
 fn part1(grid: &FixedGrid<u8>) -> usize {
-    let width = grid.width();
-    let height = grid.height();
-
-    check_slope(grid, 3, width, height)
+    check_slope_fast(grid, 3, 1, grid.width(), grid.height())
 }
 
 fn part2(grid: &FixedGrid<u8>, res_part1: usize) -> usize {
@@ -31,18 +28,38 @@ fn part2(grid: &FixedGrid<u8>, res_part1: usize) -> usize {
     let height = grid.height();
 
     res_part1
-        * check_slope(grid, 1, width, height)
-        * check_slope(grid, 5, width, height)
-        * check_slope(grid, 7, width, height)
-        * check_slope2(grid, 1, 2, width, height)
+        * check_slope_fast(grid, 1, 1, width, height)
+        * check_slope_fast(grid, 5, 1, width, height)
+        * check_slope_fast(grid, 7, 1, width, height)
+        * check_slope_fast(grid, 1, 2, width, height)
 }
 
 fn check_slope(grid: &FixedGrid<u8>, vx: usize, w: usize, h: usize) -> usize {
     (1..h).filter(|y| grid.get((*y * vx) % w, *y) == TREE).count()
 }
 
-fn check_slope2(grid: &FixedGrid<u8>, vx: usize, vy: usize, w: usize, h: usize) -> usize {
+fn check_slope_vertical(grid: &FixedGrid<u8>, vx: usize, vy: usize, w: usize, h: usize) -> usize {
     (vy..h).step_by(vy).filter(|y| grid.get(((*y * vx) / vy) % w, *y) == TREE).count()
+}
+
+fn check_slope_fast(grid: &FixedGrid<u8>, vx: usize, vy: usize, w: usize, h: usize) -> usize {
+    let mut x = vx;
+    let mut y = vy;
+    let mut count = 0;
+
+    while y < h {
+        if grid.get(x, y) == TREE {
+            count += 1;
+        }
+
+        x += vx;
+        y += vy;
+        if x > w {
+            x -= w
+        }
+    }
+
+    count
 }
 
 fn parse_input(input: &str) -> FixedGrid<u8> {

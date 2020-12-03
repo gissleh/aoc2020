@@ -5,7 +5,7 @@ pub struct FixedGrid<T> {
     height: usize,
 }
 
-impl<T> FixedGrid<T> where T: Clone + Copy + std::fmt::Debug {
+impl<T> FixedGrid<T> where T: Clone + Copy {
     pub fn width(&self) -> usize {
         self.width
     }
