@@ -65,16 +65,16 @@ fn parse_input(input: &str) -> Vec<u8> {
 }
 
 fn pass_id(pass: &[u8]) -> usize {
-    (pass[0] == B) as usize * 512
-        + (pass[1] == B) as usize * 256
-        + (pass[2] == B) as usize * 128
-        + (pass[3] == B) as usize * 64
-        + (pass[4] == B) as usize * 32
-        + (pass[5] == B) as usize * 16
-        + (pass[6] == B) as usize * 8
-        + (pass[7] == R) as usize * 4
-        + (pass[8] == R) as usize * 2
-        + (pass[9] == R) as usize * 1
+    (if pass[0] == B { 512 } else { 0 })
+        + if pass[1] == B { 256 } else { 0 }
+        + if pass[2] == B { 128 } else { 0 }
+        + if pass[3] == B { 64 } else { 0 }
+        + if pass[4] == B { 32 } else { 0 }
+        + if pass[5] == B { 16 } else { 0 }
+        + if pass[6] == B { 8 } else { 0 }
+        + if pass[7] == R { 4 } else { 0 }
+        + if pass[8] == R { 2 } else { 0 }
+        + if pass[9] == R { 1 } else { 0 }
 }
 
 #[cfg(test)]
