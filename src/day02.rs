@@ -1,4 +1,4 @@
-use common::aoc::{load_input, run_many, print_time, print_result};
+use common::aoc::{load_input, print_result, print_time, run_many};
 
 fn main() {
     let input = load_input("day02");
@@ -51,7 +51,7 @@ fn part2(lines: &[(u32, u32, u8, Vec<u8>)]) -> u32 {
 }
 
 fn parse_input(input: &str) -> Vec<(u32, u32, u8, Vec<u8>)> {
-    let mut list= Vec::with_capacity(128);
+    let mut list = Vec::with_capacity(128);
 
     for line in input.lines() {
         let mut min = 0u32;
@@ -89,4 +89,3 @@ fn parse_input(input: &str) -> Vec<(u32, u32, u8, Vec<u8>)> {
 
     list
 }
-

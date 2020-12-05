@@ -5,7 +5,10 @@ pub struct FixedGrid<T> {
     height: usize,
 }
 
-impl<T> FixedGrid<T> where T: Clone + Copy {
+impl<T> FixedGrid<T>
+where
+    T: Clone + Copy,
+{
     pub fn width(&self) -> usize {
         self.width
     }
@@ -22,18 +25,21 @@ impl<T> FixedGrid<T> where T: Clone + Copy {
         self.data[y * self.width + x] = v;
     }
 
-    pub fn new(width: usize, height: usize, def: T) ->FixedGrid<T> {
-        FixedGrid{
+    pub fn new(width: usize, height: usize, def: T) -> FixedGrid<T> {
+        FixedGrid {
             data: vec![def; width * height],
-            width, height,
+            width,
+            height,
         }
     }
 
-    pub fn from(width: usize, height: usize, data: Vec<T>) ->FixedGrid<T> {
+    pub fn from(width: usize, height: usize, data: Vec<T>) -> FixedGrid<T> {
         assert_eq!(data.len(), (width * height));
 
-        FixedGrid{
-            data, width, height,
+        FixedGrid {
+            data,
+            width,
+            height,
         }
     }
 }

@@ -1,4 +1,4 @@
-use common::aoc::{load_input, run_many, print_time, print_result};
+use common::aoc::{load_input, print_result, print_time, run_many};
 use common::grid::FixedGrid;
 
 const TREE: u8 = '#' as u8;
@@ -35,11 +35,16 @@ fn part2(grid: &FixedGrid<u8>, res_part1: usize) -> usize {
 }
 
 fn check_slope(grid: &FixedGrid<u8>, vx: usize, w: usize, h: usize) -> usize {
-    (1..h).filter(|y| grid.get((*y * vx) % w, *y) == TREE).count()
+    (1..h)
+        .filter(|y| grid.get((*y * vx) % w, *y) == TREE)
+        .count()
 }
 
 fn check_slope_vertical(grid: &FixedGrid<u8>, vx: usize, vy: usize, w: usize, h: usize) -> usize {
-    (vy..h).step_by(vy).filter(|y| grid.get(((*y * vx) / vy) % w, *y) == TREE).count()
+    (vy..h)
+        .step_by(vy)
+        .filter(|y| grid.get(((*y * vx) / vy) % w, *y) == TREE)
+        .count()
 }
 
 fn check_slope_fast(grid: &FixedGrid<u8>, vx: usize, vy: usize, w: usize, h: usize) -> usize {
@@ -64,7 +69,7 @@ fn check_slope_fast(grid: &FixedGrid<u8>, vx: usize, vy: usize, w: usize, h: usi
 
 fn parse_input(input: &str) -> FixedGrid<u8> {
     let width = input.find('\n').unwrap();
-    let height = input.len() / (width+1);
+    let height = input.len() / (width + 1);
     let mut data = Vec::with_capacity(width * height);
 
     for ch in input.chars() {
@@ -77,4 +82,3 @@ fn parse_input(input: &str) -> FixedGrid<u8> {
 
     FixedGrid::from(width, height, data)
 }
-

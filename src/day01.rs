@@ -1,4 +1,4 @@
-use common::aoc::{load_input, run_many, print_time, print_result};
+use common::aoc::{load_input, print_result, print_time, run_many};
 
 fn main() {
     let input = load_input("day01");
@@ -45,13 +45,13 @@ fn part2(input: &[u32]) -> u32 {
 
         for (j, n2) in input[i..].iter().enumerate() {
             let n12 = *n1 + *n2;
-            if n12 > 2020-min {
-                continue
+            if n12 > 2020 - min {
+                continue;
             }
 
-            for n3 in input[i+j..].iter() {
+            for n3 in input[i + j..].iter() {
                 if n12 + *n3 == 2020 {
-                    return *n1 * *n2 * *n3
+                    return *n1 * *n2 * *n3;
                 }
             }
         }
@@ -70,7 +70,7 @@ fn parse_input(input: &str) -> Vec<u32> {
                 list.push(sum);
             }
             sum = 0;
-            continue
+            continue;
         }
 
         sum *= 10;
@@ -79,4 +79,3 @@ fn parse_input(input: &str) -> Vec<u32> {
 
     list
 }
-

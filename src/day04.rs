@@ -1,4 +1,4 @@
-use common::aoc::{load_input, run_many, print_time, print_result};
+use common::aoc::{load_input, print_result, print_time, run_many};
 
 const ZERO: u32 = '0' as u8 as u32;
 
@@ -70,19 +70,18 @@ impl PassportCollection {
                 state = 0;
 
                 match current_key.as_str() {
-                    "byr" => { current_passport.byr.push_str(&current_value) }
-                    "iyr" => { current_passport.iyr.push_str(&current_value) }
-                    "eyr" => { current_passport.eyr.push_str(&current_value) }
-                    "hgt" => { current_passport.hgt.push_str(&current_value) }
-                    "hcl" => { current_passport.hcl.push_str(&current_value) }
-                    "ecl" => { current_passport.ecl.push_str(&current_value) }
-                    "pid" => { current_passport.pid.push_str(&current_value) }
+                    "byr" => current_passport.byr.push_str(&current_value),
+                    "iyr" => current_passport.iyr.push_str(&current_value),
+                    "eyr" => current_passport.eyr.push_str(&current_value),
+                    "hgt" => current_passport.hgt.push_str(&current_value),
+                    "hcl" => current_passport.hcl.push_str(&current_value),
+                    "ecl" => current_passport.ecl.push_str(&current_value),
+                    "pid" => current_passport.pid.push_str(&current_value),
                     _ => {}
                 }
 
                 current_key.clear();
                 current_value.clear();
-
             } else if ch == ':' {
                 state = 1;
             } else {
@@ -98,9 +97,7 @@ impl PassportCollection {
 
         passports.push(current_passport);
 
-        PassportCollection{
-            passports
-        }
+        PassportCollection { passports }
     }
 }
 
@@ -115,9 +112,13 @@ struct Passport {
 }
 
 impl Passport {
-    fn missing_fields(&self) -> bool{
-        self.byr.is_empty() || self.iyr.is_empty() || self.eyr.is_empty()
-            || self.hgt.is_empty() || self.hcl.is_empty() || self.ecl.is_empty()
+    fn missing_fields(&self) -> bool {
+        self.byr.is_empty()
+            || self.iyr.is_empty()
+            || self.eyr.is_empty()
+            || self.hgt.is_empty()
+            || self.hcl.is_empty()
+            || self.ecl.is_empty()
             || self.pid.is_empty()
     }
 
@@ -132,8 +133,11 @@ impl Passport {
         if !valid_color(&self.hcl) {
             return false;
         }
-        if !one_of(&self.ecl, &["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]) {
-            return false
+        if !one_of(
+            &self.ecl,
+            &["amb", "blu", "brn", "gry", "grn", "hzl", "oth"],
+        ) {
+            return false;
         }
 
         let (height, height_unit) = parse_int_unit(&self.hgt);
@@ -163,7 +167,7 @@ impl Passport {
     }
 
     fn new() -> Passport {
-        Passport{
+        Passport {
             byr: String::with_capacity(8),
             iyr: String::with_capacity(8),
             eyr: String::with_capacity(8),
@@ -194,7 +198,7 @@ fn valid_pid(s: &str) -> bool {
     }
 
     for ch in s.chars() {
-        if ch < '0' || ch > '9'  {
+        if ch < '0' || ch > '9' {
             return false;
         }
     }
@@ -219,7 +223,7 @@ fn parse_int(s: &str) -> u32 {
         if ch >= '0' && ch <= '9' {
             result = (result * 10) + ((ch as u32) - ZERO);
         } else {
-            break
+            break;
         }
     }
 
@@ -234,7 +238,7 @@ fn parse_int_unit(s: &str) -> (u32, &str) {
         if ch >= '0' && ch <= '9' {
             result = (result * 10) + ((ch as u32) - ZERO);
         } else {
-            return (result, &s[pos..])
+            return (result, &s[pos..]);
         }
 
         pos += 1;
@@ -249,7 +253,8 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let coll = PassportCollection::parse("pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+        let coll = PassportCollection::parse(
+            "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
 hcl:#623a2f
 
 eyr:2029 ecl:blu cid:129 byr:1989
@@ -261,10 +266,12 @@ pid:545766238 ecl:hzl
 eyr:2022
 
 iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
-");
+",
+        );
         assert_eq!(coll.count_valid(), 4);
 
-        let coll = PassportCollection::parse("eyr:1972 cid:100
+        let coll = PassportCollection::parse(
+            "eyr:1972 cid:100
 hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
 
 iyr:2019
@@ -277,7 +284,8 @@ ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277
 hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007
-");
+",
+        );
         assert_eq!(coll.count_valid(), 0);
     }
 }
