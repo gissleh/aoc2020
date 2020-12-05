@@ -19,7 +19,7 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 }
 
-fn part1(list: &[u8]) -> usize {
+fn part1(list: &[u8]) -> u32 {
     let mut highest_id = 0;
 
     for i in 0..list.len() / 10 {
@@ -34,18 +34,18 @@ fn part1(list: &[u8]) -> usize {
     highest_id
 }
 
-fn part2(list: &[u8]) -> usize {
+fn part2(list: &[u8]) -> u32 {
     let mut taken = vec![false; 128 * 8];
 
     for i in 0..list.len() / 10 {
         let s = i * 10;
         let e = s + 10;
-        taken[pass_id(&list[s..e])] = true;
+        taken[pass_id(&list[s..e]) as usize] = true;
     }
 
     for i in 1..taken.len() - 1 {
         if taken[i - 1] && !taken[i] && taken[i + 1] {
-            return i;
+            return i as u32;
         }
     }
 
@@ -64,7 +64,7 @@ fn parse_input(input: &str) -> Vec<u8> {
     vec
 }
 
-fn pass_id(pass: &[u8]) -> usize {
+fn pass_id(pass: &[u8]) -> u32 {
     (if pass[0] == B { 512 } else { 0 })
         + if pass[1] == B { 256 } else { 0 }
         + if pass[2] == B { 128 } else { 0 }
