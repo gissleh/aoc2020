@@ -135,27 +135,26 @@ fn part1_inp(a: &str) -> u32 {
 
 fn part2_alt(a: &[usize]) -> u32 {
     let mut count = 0;
-    let mut buf = [0usize; 26];
-    let mut group_size = 0usize;
+    let mut sets = Vec::with_capacity(8);
+    let mut set = 0usize;
 
     for n in a.iter() {
         match *n {
             28 => {
-                for elem in buf.iter_mut() {
-                    if *elem == group_size {
-                        count += 1;
-                    }
-
-                    *elem = 0;
+                let mut acc: usize = sets[0];
+                for s in sets[1..].iter() {
+                    acc &= *s;
                 }
+                count += acc.count_ones();
 
-                group_size = 0;
+                sets.clear();
             }
             27 => {
-                group_size += 1;
+                sets.push(set);
+                set = 0;
             }
             _ => {
-                buf[*n] += 1;
+                set |= 1 << *n;
             }
         }
     }
@@ -165,29 +164,27 @@ fn part2_alt(a: &[usize]) -> u32 {
 
 fn part2_inp(a: &str) -> u32 {
     let mut count = 0;
-    let mut buf = [0u32; 26];
-    let mut group_size = 0u32;
+    let mut sets = Vec::with_capacity(8);
+    let mut set = 0usize;
 
     let mut p = ' ' as char;
     for c in a.chars() {
         match c {
             '\n' => {
                 if p == c {
-                    for elem in buf.iter_mut() {
-                        if *elem == group_size {
-                            count += 1;
-                        }
-
-                        *elem = 0;
+                    let mut acc: usize = sets[0];
+                    for s in sets[1..].iter() {
+                        acc &= *s;
                     }
-
-                    group_size = 0;
+                    count += acc.count_ones();
+                    sets.clear();
                 } else {
-                    group_size += 1;
+                    sets.push(set);
+                    set = 0;
                 }
             }
             'a'..='z' => {
-                buf[(c as usize) - A] += 1;
+                set |= 1 << (c as usize - A);
             }
             _ => {}
         }
@@ -195,11 +192,9 @@ fn part2_inp(a: &str) -> u32 {
         p = c
     }
 
-    for elem in buf.iter() {
-        if *elem == group_size {
-            count += 1;
-        }
-    }
+    count += sets.iter().fold(134217727usize, |acc, cur| {
+        acc & *cur
+    }).count_ones();
 
     count
 }
