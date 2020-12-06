@@ -1,9 +1,11 @@
-use common::aoc::{load_input, print_result, print_time, run_many};
+use common::aoc::{load_input, print_result, print_time, run_many, run_once, print_two_results};
 
 const A: usize = 'a' as usize;
 
 fn main() {
-    let input = load_input("day06");
+    let (input, dur_load) = run_once(|| load_input("day06"));
+
+    print_time("Load", dur_load);
 
     let (gs, dur_parse) = run_many(1000, || GroupSet::parse(&input));
 
@@ -33,13 +35,16 @@ fn main() {
 
     let (res_part1_inp, dur_part1_inp) = run_many(10000, || part1_inp(&input));
     let (res_part2_inp, dur_part2_inp) = run_many(10000, || part2_inp(&input));
+    let ((res_part1_inp2, res_part2_inp2), dur_parts_inp) = run_many(10000, || both_parts_inp(&input));
 
     print_result("P1 INPUT", res_part1_inp);
     print_result("P2 INPUT", res_part2_inp);
+    print_two_results("P2 INPUT", res_part1_inp2, res_part2_inp2);
 
     print_time("P1 INPUT", dur_part1_inp);
     print_time("P2 INPUT", dur_part2_inp);
     print_time("Total INPUT", dur_part1_inp + dur_part2_inp);
+    print_time("P1+P2 INPUT", dur_parts_inp);
 }
 
 fn part1(gs: &GroupSet) -> u32 {
@@ -197,6 +202,51 @@ fn part2_inp(a: &str) -> u32 {
     }).count_ones();
 
     count
+}
+
+fn both_parts_inp(a: &str) -> (u32, u32) {
+    let mut count1 = 0;
+    let mut count2 = 0;
+    let mut sets = Vec::with_capacity(8);
+    let mut set = 0usize;
+    let mut group_set = 0usize;
+
+    let mut p = ' ' as char;
+    for c in a.chars() {
+        match c {
+            '\n' => {
+                if p == c {
+                    let mut acc: usize = sets[0];
+                    for s in sets[1..].iter() {
+                        acc &= *s;
+                    }
+                    count2 += acc.count_ones();
+                    sets.clear();
+
+                    count1 += group_set.count_ones();
+                    group_set = 0;
+                } else {
+                    sets.push(set);
+                    set = 0;
+                }
+            }
+            'a'..='z' => {
+                let n = 1 << (c as usize - A);
+                set |= n;
+                group_set |= n;
+            }
+            _ => {}
+        }
+
+        p = c
+    }
+
+    count1 += group_set.count_ones();
+    count2 += sets.iter().fold(134217727usize, |acc, cur| {
+        acc & *cur
+    }).count_ones();
+
+    (count1, count2)
 }
 
 fn parse_input_alt(s: &str) -> Vec<usize> {

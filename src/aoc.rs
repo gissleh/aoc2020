@@ -73,6 +73,10 @@ pub fn print_result(label: &str, result: impl Display) {
     println!("Result ({}): {}", label, result);
 }
 
+pub fn print_two_results(label: &str, result1: impl Display, result2: impl Display) {
+    println!("Result ({}): {} {}", label, result1, result2);
+}
+
 pub fn print_result_multiline(label: &str, result: impl Display) {
     println!("Result ({}):\n{}", label, result);
 }
