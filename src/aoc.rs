@@ -18,6 +18,21 @@ pub fn load_input(name: &str) -> String {
     buf
 }
 
+pub fn load_input_bytes(name: &str) -> Vec<u8> {
+    let mut buf = Vec::with_capacity(2048);
+
+    match File::open(format!("./input/{}.txt", name)) {
+        Ok(mut file) => {
+            file.read_to_end(&mut buf).expect("Could not read file ./input/{}.txt");
+        }
+        Err(e) => {
+            panic!("Could not load file ./input/{}.txt: {}", name, e);
+        }
+    }
+
+    buf
+}
+
 pub fn run_once<T>(callback: impl Fn() -> T) -> (T, i64) {
     let start = PreciseTime::now();
     let result = callback();

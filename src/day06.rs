@@ -1,9 +1,10 @@
-use common::aoc::{load_input, print_result, print_time, run_many};
+use common::aoc::{load_input, print_result, print_time, run_many, load_input_bytes};
 
 const A: usize = 'a' as usize;
 
 fn main() {
     let input = load_input("day06");
+    let input_bytes = load_input_bytes("day06");
 
     let (gs, dur_parse) = run_many(1000, || GroupSet::parse(&input));
 
@@ -31,8 +32,8 @@ fn main() {
     print_time("P2 ALT", dur_part2_alt);
     print_time("Total ALT", dur_parse_alt + dur_part1_alt + dur_part2_alt);
 
-    let (res_part1_inp, dur_part1_inp) = run_many(10000, || part1_inp(&input));
-    let (res_part2_inp, dur_part2_inp) = run_many(10000, || part2_inp(&input));
+    let (res_part1_inp, dur_part1_inp) = run_many(10000, || part1_inp(&input_bytes));
+    let (res_part2_inp, dur_part2_inp) = run_many(10000, || part2_inp(&input_bytes));
 
     print_result("P1 INPUT", res_part1_inp);
     print_result("P2 INPUT", res_part2_inp);
@@ -120,22 +121,26 @@ fn part1_alt(a: &[usize]) -> u32 {
     count
 }
 
-fn part1_inp(a: &str) -> u32 {
+const NEWLINE: u8 = '\n' as u8;
+const A_U8: u8 = 'a' as u8;
+const Z_U8: u8 = 'z' as u8;
+
+fn part1_inp(a: &[u8]) -> u32 {
     let mut count = 0;
     let mut buf = [false; 26];
 
-    let mut p = ' ' as char;
-    for c in a.chars() {
-        match c {
-            '\n' => {
-                if p == c {
+    let mut p = 0;
+    for c in a.iter() {
+        match *c {
+            NEWLINE => {
+                if p == *c {
                     for elem in buf.iter_mut() {
                         *elem = false;
                     }
                 }
             }
-            'a'..='z' => {
-                let n = (c as usize) - A;
+            A_U8..=Z_U8 => {
+                let n = (*c as usize) - A;
 
                 if !buf[n] {
                     count += 1;
@@ -145,7 +150,7 @@ fn part1_inp(a: &str) -> u32 {
             _ => {}
         }
 
-        p = c
+        p = *c
     }
 
     count
@@ -181,16 +186,16 @@ fn part2_alt(a: &[usize]) -> u32 {
     count
 }
 
-fn part2_inp(a: &str) -> u32 {
+fn part2_inp(a: &[u8]) -> u32 {
     let mut count = 0;
     let mut buf = [0u32; 26];
     let mut group_size = 0u32;
 
-    let mut p = ' ' as char;
-    for c in a.chars() {
-        match c {
-            '\n' => {
-                if p == c {
+    let mut p = 0;
+    for c in a.iter() {
+        match *c {
+            NEWLINE => {
+                if p == *c {
                     for elem in buf.iter_mut() {
                         if *elem == group_size {
                             count += 1;
@@ -204,13 +209,13 @@ fn part2_inp(a: &str) -> u32 {
                     group_size += 1;
                 }
             }
-            'a'..='z' => {
-                buf[(c as usize) - A] += 1;
+            A_U8..=Z_U8 => {
+                buf[(*c as usize) - A] += 1;
             }
             _ => {}
         }
 
-        p = c
+        p = *c
     }
 
     for elem in buf.iter() {
