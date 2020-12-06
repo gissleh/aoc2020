@@ -7,8 +7,8 @@ fn main() {
 
     let (gs, dur_parse) = run_many(1000, || GroupSet::parse(&input));
 
-    let (res_part1, dur_part1) = run_many(100000, || part1(&gs));
-    let (res_part2, dur_part2) = run_many(100000, || part2(&gs));
+    let (res_part1, dur_part1) = run_many(10000, || part1(&gs));
+    let (res_part2, dur_part2) = run_many(10000, || part2(&gs));
 
     print_result("P1", res_part1);
     print_result("P2", res_part2);
@@ -20,8 +20,8 @@ fn main() {
 
     let (list, dur_parse_alt) = run_many(1000, || parse_input_alt(&input));
 
-    let (res_part1_alt, dur_part1_alt) = run_many(100000, || part1_alt(&list));
-    let (res_part2_alt, dur_part2_alt) = run_many(100000, || part2_alt(&list));
+    let (res_part1_alt, dur_part1_alt) = run_many(10000, || part1_alt(&list));
+    let (res_part2_alt, dur_part2_alt) = run_many(10000, || part2_alt(&list));
 
     print_result("P1 ALT", res_part1_alt);
     print_result("P2 ALT", res_part2_alt);
@@ -30,6 +30,16 @@ fn main() {
     print_time("P1 ALT", dur_part1_alt);
     print_time("P2 ALT", dur_part2_alt);
     print_time("Total ALT", dur_parse_alt + dur_part1_alt + dur_part2_alt);
+
+    let (res_part1_inp, dur_part1_inp) = run_many(10000, || part1_inp(&input));
+    let (res_part2_inp, dur_part2_inp) = run_many(10000, || part2_inp(&input));
+
+    print_result("P1 INPUT", res_part1_inp);
+    print_result("P2 INPUT", res_part2_inp);
+
+    print_time("P1 INPUT", dur_part1_inp);
+    print_time("P2 INPUT", dur_part2_inp);
+    print_time("Total INPUT", dur_part1_inp + dur_part2_inp);
 }
 
 fn part1(gs: &GroupSet) -> u32 {
@@ -110,6 +120,37 @@ fn part1_alt(a: &[usize]) -> u32 {
     count
 }
 
+fn part1_inp(a: &str) -> u32 {
+    let mut count = 0;
+    let mut buf = [false; 26];
+
+    let mut p = ' ' as char;
+    for c in a.chars() {
+        match c {
+            '\n' => {
+                if p == c {
+                    for elem in buf.iter_mut() {
+                        *elem = false;
+                    }
+                }
+            }
+            'a'..='z' => {
+                let n = (c as usize) - A;
+
+                if !buf[n] {
+                    count += 1;
+                    buf[n] = true;
+                }
+            }
+            _ => {}
+        }
+
+        p = c
+    }
+
+    count
+}
+
 fn part2_alt(a: &[usize]) -> u32 {
     let mut count = 0;
     let mut buf = [0usize; 26];
@@ -134,6 +175,47 @@ fn part2_alt(a: &[usize]) -> u32 {
             _ => {
                 buf[*n] += 1;
             }
+        }
+    }
+
+    count
+}
+
+fn part2_inp(a: &str) -> u32 {
+    let mut count = 0;
+    let mut buf = [0u32; 26];
+    let mut group_size = 0u32;
+
+    let mut p = ' ' as char;
+    for c in a.chars() {
+        match c {
+            '\n' => {
+                if p == c {
+                    for elem in buf.iter_mut() {
+                        if *elem == group_size {
+                            count += 1;
+                        }
+
+                        *elem = 0;
+                    }
+
+                    group_size = 0;
+                } else {
+                    group_size += 1;
+                }
+            }
+            'a'..='z' => {
+                buf[(c as usize) - A] += 1;
+            }
+            _ => {}
+        }
+
+        p = c
+    }
+
+    for elem in buf.iter() {
+        if *elem == group_size {
+            count += 1;
         }
     }
 
