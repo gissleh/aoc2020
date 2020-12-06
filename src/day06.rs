@@ -1,7 +1,6 @@
 use common::aoc::{load_input, print_result, print_time, run_many};
 
 const A: usize = 'a' as usize;
-const A_U32: u32 = 'a' as u32;
 
 fn main() {
     let input = load_input("day06");
