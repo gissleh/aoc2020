@@ -44,26 +44,18 @@ fn main() {
 
 fn part1(gs: &GroupSet) -> u32 {
     let mut count = 0;
-    let mut buf = [false; 26];
+    let mut buf = 0usize;
 
     for g in gs.groups.iter() {
         let start = g.pos;
         let end = start + g.len;
 
         for a in gs.answers[start..end].iter() {
-            buf[*a] = true;
+            buf |= 1 << *a;
         }
 
-        let mut group_count = 0;
-        for elem in buf.iter_mut() {
-            if *elem {
-                group_count += 1;
-            }
-
-            *elem = false;
-        }
-
-        count += group_count;
+        count += buf.count_ones();
+        buf = 0;
     }
 
     count
@@ -98,21 +90,17 @@ fn part2(gs: &GroupSet) -> u32 {
 
 fn part1_alt(a: &[usize]) -> u32 {
     let mut count = 0;
-    let mut buf = [false; 26];
+    let mut buf = 0usize;
 
     for n in a.iter() {
         match *n {
             28 => {
-                for elem in buf.iter_mut() {
-                    *elem = false;
-                }
+                count += buf.count_ones();
+                buf = 0;
             }
             27 => {}
             _ => {
-                if !buf[*n] {
-                    count += 1;
-                    buf[*n] = true;
-                }
+                buf |= 1 << *n;
             }
         }
     }
@@ -122,25 +110,19 @@ fn part1_alt(a: &[usize]) -> u32 {
 
 fn part1_inp(a: &str) -> u32 {
     let mut count = 0;
-    let mut buf = [false; 26];
+    let mut buf = 0usize;
 
     let mut p = ' ' as char;
     for c in a.chars() {
         match c {
             '\n' => {
                 if p == c {
-                    for elem in buf.iter_mut() {
-                        *elem = false;
-                    }
+                    count += buf.count_ones();
+                    buf = 0;
                 }
             }
             'a'..='z' => {
-                let n = (c as usize) - A;
-
-                if !buf[n] {
-                    count += 1;
-                    buf[n] = true;
-                }
+                buf |= 1 << (c as usize) - A;
             }
             _ => {}
         }
@@ -148,7 +130,7 @@ fn part1_inp(a: &str) -> u32 {
         p = c
     }
 
-    count
+    count + buf.count_ones()
 }
 
 fn part2_alt(a: &[usize]) -> u32 {
