@@ -82,21 +82,27 @@ pub fn print_result_multiline(label: &str, result: impl Display) {
 }
 
 pub fn print_time(label: &str, ns: i64) {
-    if ns > 1_000_000_000 {
+    if ns > 10_000_000_000 {
         println!(
-            "Duration ({}): {:.3}s",
+            "Duration ({}): {:.1}s",
+            label,
+            (ns as f64) / (1_000_000_000 as f64)
+        );
+    } else if ns > 1_000_000_000 {
+        println!(
+            "Duration ({}): {:.4}s",
             label,
             (ns as f64) / (1_000_000_000 as f64)
         );
     } else if ns > 1_000_000 {
         println!(
-            "Duration ({}): {:.2}ms",
+            "Duration ({}): {:.3}ms",
             label,
             (ns as f64) / (1_000_000 as f64)
         );
     } else if ns > 1_000 {
         println!(
-            "Duration ({}): {:.1}µs",
+            "Duration ({}): {:.2}µs",
             label,
             (ns as f64) / (1_000 as f64)
         );
