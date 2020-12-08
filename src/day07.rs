@@ -1,5 +1,6 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
 use std::collections::BTreeMap;
+use std::hint::unreachable_unchecked;
 
 const ZERO: u32 = '0' as u32;
 
@@ -9,7 +10,7 @@ fn main() {
     print_time("Load", dur_load);
 
     let (rule_set, dur_parse) = run_many(1000, || RuleSet::parse(&input));
-    let (res_part1, dur_part1) = run_many(100000, || rule_set.count_containers("shiny gold"));
+    let (res_part1, dur_part1) = run_many(100000, || rule_set.count_unique_parents("shiny gold"));
     let (res_part2, dur_part2) = run_many(100000, || rule_set.count_bags("shiny gold"));
 
     print_result("P1", res_part1);
@@ -27,7 +28,7 @@ struct RuleSet {
 }
 
 impl RuleSet {
-    pub fn count_containers(&self, name: &str) -> u32 {
+    pub fn count_unique_parents(&self, name: &str) -> u32 {
         let bag = self.bag(name).unwrap();
         let mut explored = vec![false; self.bags.len()];
         let mut stack = Vec::with_capacity(64);
@@ -61,17 +62,18 @@ impl RuleSet {
         stack.push((bag, 1u32));
 
         while stack.len() > 0 {
-            let (bag, c) = stack.pop().unwrap();
-            for BagLink(index, count2) in bag.can_contain.iter() {
-                count += c * *count2;
+            let (bag, bag_count) = stack.pop().unwrap();
+            count += bag_count;
+
+            for BagLink(index, child_bag_count) in bag.can_contain.iter() {
                 stack.push((
                     self.bags.get(*index).unwrap(),
-                    c * *count2,
+                    bag_count * child_bag_count,
                 ));
             }
         }
 
-        count
+        count - 1 // Don't count Goldenboi
     }
 
     fn bag(&self, s: &str) -> Option<&Bag> {
@@ -111,7 +113,7 @@ impl RuleSet {
             for part in line[offset..].split(",") {
                 let count = (part.chars().skip(1).next().unwrap() as u32) - ZERO;
                 if count > 9 {
-                    continue
+                    break; // This being non-numeric means this is a "contains no bags" line.
                 }
 
                 let child_bag_color_index = find_nth(part, ' ', 4);
@@ -148,16 +150,14 @@ fn find_nth(s: &str, c: char, n: usize) -> usize {
         }
     }
 
-    0
+    unreachable!()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_part2() {
-        let rs1 = RuleSet::parse("light red bags contain 1 bright white bag, 2 muted yellow bags.
+    const RS1_INPUT: &'static str = "light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
 bright white bags contain 1 shiny gold bag.
 muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
@@ -165,14 +165,26 @@ shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
 dark olive bags contain 3 faded blue bags, 4 dotted black bags.
 vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
 faded blue bags contain no other bags.
-dotted black bags contain no other bags.");
-        let rs2 = RuleSet::parse("shiny gold bags contain 2 dark red bags.
+dotted black bags contain no other bags.";
+    const RS2_INPUT: &'static str = "shiny gold bags contain 2 dark red bags.
 dark red bags contain 2 dark orange bags.
 dark orange bags contain 2 dark yellow bags.
 dark yellow bags contain 2 dark green bags.
 dark green bags contain 2 dark blue bags.
 dark blue bags contain 2 dark violet bags.
-dark violet bags contain no other bags.");
+dark violet bags contain no other bags.";
+
+    #[test]
+    fn test_part1() {
+        let rs1 = RuleSet::parse(RS1_INPUT);
+
+        assert_eq!(rs1.count_unique_parents("shiny gold"), 4);
+    }
+
+    #[test]
+    fn test_part2() {
+        let rs1 = RuleSet::parse(RS1_INPUT);
+        let rs2 = RuleSet::parse(RS2_INPUT);
 
         assert_eq!(rs2.count_bags("shiny gold"), 126);
         assert_eq!(rs1.count_bags("shiny gold"), 32);
