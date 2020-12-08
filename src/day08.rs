@@ -8,14 +8,18 @@ fn main() {
     let (program, dur_parse) = run_many(1000, || Program::parse(&input));
     let (res_part1, dur_part1) = run_many(100000, || program.part1());
     let (res_part2, dur_part2) = run_many(10000, || program.part2());
+    let (res_part2_alt, dur_part2_alt) = run_many(10000, || program.part2_alt());
 
     print_result("P1", res_part1);
     print_result("P2", res_part2);
+    print_result("P2 ALT", res_part2_alt);
 
     print_time("Parse", dur_parse);
     print_time("P1", dur_part1);
     print_time("P2", dur_part2);
+    print_time("P2 ALT", dur_part2_alt);
     print_time("Total", dur_parse + dur_part1 + dur_part2);
+    print_time("Total ALT", dur_parse + dur_part1 + dur_part2_alt);
 }
 
 const ZERO: i32 = '0' as i32;
@@ -89,6 +93,60 @@ impl Program {
         }
 
         0
+    }
+
+    fn part2_alt(&self) -> i32 {
+        let target = self.instructions.len();
+        let mut acc = 0;
+        let mut pc = 0;
+        let mut seen_log = Vec::with_capacity(512);
+        let mut has_seen = vec![false; self.instructions.len()];
+
+        let mut checkpoint = (acc, pc);
+        let mut active = false;
+        let mut failed = false;
+
+        loop {
+            let Instruction(mut op, n) = self.instructions[pc];
+
+            if op != ACC && n != 0 && !active && !failed {
+                checkpoint = (acc, pc);
+                active = true;
+
+                op = if op == JMP {NOP} else {JMP};
+                seen_log.push(pc);
+            } else if active {
+                seen_log.push(pc);
+            }
+
+            failed = false;
+
+            if has_seen[pc] {
+                acc = checkpoint.0;
+                pc = checkpoint.1;
+
+                active = false;
+                failed = true;
+
+                for i in seen_log.iter() {
+                    has_seen[*i] = false;
+                }
+                seen_log.clear();
+                continue;
+            }
+            has_seen[pc] = true;
+
+            match op {
+                NOP => {pc += 1},
+                ACC => {acc += n; pc += 1},
+                JMP => (pc = (pc as i32 + n) as usize),
+                _ => {}
+            }
+
+            if pc == target {
+                return acc;
+            }
+        }
     }
 
     pub fn parse(s: &str) -> Program {
