@@ -1,6 +1,5 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
 use std::collections::BTreeMap;
-use std::hint::unreachable_unchecked;
 
 const ZERO: u32 = '0' as u32;
 
@@ -40,7 +39,7 @@ impl RuleSet {
         while stack.len() > 0 {
             let bag = stack.pop().unwrap();
 
-            for BagLink(index, _) in bag.contained_by.iter() {
+            for index in bag.contained_by.iter() {
                 if !explored[*index] {
                     explored[*index] = true;
                     count += 1;
@@ -121,7 +120,7 @@ impl RuleSet {
                 let child_bag_index = rule_set.ensure_bag_index(child_bag_color);
 
                 rule_set.bags[bag_index].can_contain.push(BagLink(child_bag_index, count));
-                rule_set.bags[child_bag_index].contained_by.push(BagLink(bag_index, count));
+                rule_set.bags[child_bag_index].contained_by.push(bag_index);
             }
         }
 
@@ -133,7 +132,7 @@ impl RuleSet {
 struct Bag {
     index: usize,
     can_contain: Vec<BagLink>,
-    contained_by: Vec<BagLink>,
+    contained_by: Vec<usize>,
 }
 
 #[derive(Debug)]
