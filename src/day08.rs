@@ -8,18 +8,14 @@ fn main() {
     let (program, dur_parse) = run_many(1000, || Program::parse(&input));
     let (res_part1, dur_part1) = run_many(100000, || program.part1());
     let (res_part2, dur_part2) = run_many(10000, || program.part2());
-    let (res_part2_alt, dur_part2_alt) = run_many(10000, || program.part2_alt());
 
     print_result("P1", res_part1);
     print_result("P2", res_part2);
-    print_result("P2 ALT", res_part2_alt);
 
     print_time("Parse", dur_parse);
     print_time("P1", dur_part1);
     print_time("P2", dur_part2);
-    print_time("P2 ALT", dur_part2_alt);
     print_time("Total", dur_parse + dur_part1 + dur_part2);
-    print_time("Total ALT", dur_parse + dur_part1 + dur_part2_alt);
 }
 
 const ZERO: i32 = '0' as i32;
@@ -32,7 +28,6 @@ struct Instruction (u32, i32);
 
 struct Program {
     instructions: Vec<Instruction>,
-    nopjmps: Vec<usize>,
 }
 
 impl Program {
@@ -59,43 +54,6 @@ impl Program {
     }
 
     fn part2(&self) -> i32 {
-        let mut has_seen = vec![false; self.instructions.len()];
-        let target = self.instructions.len();
-
-        for nji in self.nopjmps.iter().cloned() {
-            let mut pc = 0;
-            let mut acc = 0;
-
-            loop {
-                if pc == target {
-                    return acc
-                }
-
-                if has_seen[pc] {
-                    break;
-                }
-                has_seen[pc] = true;
-
-                let Instruction(mut op, n) = self.instructions[pc];
-                if pc == nji {
-                    op = if op == JMP {NOP} else {JMP};
-                }
-
-                match op {
-                    NOP => {pc += 1},
-                    ACC => {acc += n; pc += 1},
-                    JMP => (pc = (pc as i32 + n) as usize),
-                    _ => {}
-                }
-            }
-
-            has_seen.iter_mut().for_each(|v| *v = false);
-        }
-
-        0
-    }
-
-    fn part2_alt(&self) -> i32 {
         let target = self.instructions.len();
         let mut acc = 0;
         let mut pc = 0;
@@ -151,7 +109,6 @@ impl Program {
 
     pub fn parse(s: &str) -> Program {
         let mut instructions = Vec::with_capacity(1024);
-        let mut nopjmps = Vec::with_capacity(1024);
 
         for line in s.lines() {
             if line.len() == 0 {
@@ -161,26 +118,15 @@ impl Program {
             let n = parse_int(&line[4..]);
 
             match &line[0..3] {
-                "nop" => {
-                    if n != 0 {
-                        nopjmps.push(instructions.len());
-                    }
-                    instructions.push(Instruction(NOP, n));
-                },
+                "nop" => instructions.push(Instruction(NOP, n)),
                 "acc" => instructions.push(Instruction(ACC, n)),
-                "jmp" => {
-                    if n != 0 {
-                        nopjmps.push(instructions.len());
-                    }
-                    instructions.push(Instruction(JMP, n));
-                },
+                "jmp" => instructions.push(Instruction(JMP, n)),
                 _ => panic!(format!("Unknown instruction: {}", line))
             }
         }
 
         Program{
             instructions,
-            nopjmps,
         }
     }
 }
