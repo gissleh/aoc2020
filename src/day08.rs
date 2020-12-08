@@ -1,5 +1,4 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
-use termion::event::Key::Insert;
 
 fn main() {
     let (input, dur_load) = run_once(|| load_input("day08"));
