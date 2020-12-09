@@ -6,9 +6,9 @@ fn main() {
     print_time("Load", dur_load);
 
     let (list, dur_parse) = run_many(1000, || parse_input(&input));
-    let (res_part1, dur_part1) = run_many(1000, || part1(&list, 25));
+    let ((res_part1, target_pos), dur_part1) = run_many(1000, || part1(&list, 25));
     let (res_part2, dur_part2) = run_many(100000, || part2(&list, res_part1));
-    let (res_part2_alt, dur_part2_alt) = run_many(100000, || part2_alt(&list, res_part1));
+    let (res_part2_alt, dur_part2_alt) = run_many(100000, || part2_alt(&list, target_pos));
 
     print_result("P1", res_part1);
     print_result("P2", res_part2);
@@ -21,11 +21,11 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 }
 
-fn part1(data: &[u64], preamble_length: usize) -> u64 {
+fn part1(data: &[u64], preamble_length: usize) -> (u64, usize) {
     let mut preamble_pos = 0;
     let mut preamble = &data[0..preamble_length];
 
-    'outer: for n in data[preamble_length..].iter() {
+    'outer: for (i, n) in data[preamble_length..].iter().enumerate() {
          for (i, pre_i) in preamble.iter().enumerate() {
             for pre_j in preamble[i+1..].iter() {
                 if *pre_i + *pre_j == *n {
@@ -36,10 +36,10 @@ fn part1(data: &[u64], preamble_length: usize) -> u64 {
             }
         }
 
-        return *n;
+        return (*n, i + preamble_length);
     }
 
-    return 0;
+    return (0, 0);
 }
 
 fn part2(data: &[u64], target: u64) -> u64 {
@@ -72,8 +72,9 @@ fn part2(data: &[u64], target: u64) -> u64 {
     smallest + largest
 }
 
-fn part2_alt(data: &[u64], target: u64) -> u64 {
-    let mut lower1 = (data.iter().position(|p| *p == target).unwrap() * 3) / 4;
+fn part2_alt(data: &[u64], target_pos: usize) -> u64 {
+    let target = data[target_pos];
+    let mut lower1 = (target_pos * 3) / 4;
     let mut upper1 = lower1 + 1;
     let mut lower2 = lower1;
     let mut upper2 = upper1;
@@ -83,7 +84,7 @@ fn part2_alt(data: &[u64], target: u64) -> u64 {
     let upper;
 
     loop {
-        if upper1 < data.len() {
+        if upper1 < data.len() - 1 {
             if lower1 != upper1 {
                 let n = data[upper1 + 1];
                 if sum1 + n <= target {
@@ -107,7 +108,7 @@ fn part2_alt(data: &[u64], target: u64) -> u64 {
             }
         }
 
-        if lower2 < data.len() {
+        if lower2 < data.len() && lower2 > 0 {
             if lower2 != upper2 {
                 let n = data[lower2 - 1];
                 if sum2 + n <= target {
@@ -176,7 +177,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(EXAMPLE, 5), 127);
+        assert_eq!(part1(EXAMPLE, 5), (127, EXAMPLE.iter().position(|p| *p == 127).unwrap()));
     }
 
     #[test]
@@ -186,6 +187,6 @@ mod tests {
 
     #[test]
     fn test_part2_alt() {
-        assert_eq!(part2_alt(EXAMPLE, 127), 62);
+        assert_eq!(part2_alt(EXAMPLE, EXAMPLE.iter().position(|p| *p == 127).unwrap()), 62);
     }
 }
