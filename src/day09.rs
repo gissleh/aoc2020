@@ -22,26 +22,18 @@ fn part1(data: &[u64], preamble_length: usize) -> u64 {
     let mut preamble_pos = 0;
     let mut preamble = &data[0..preamble_length];
 
-    for n in data[preamble_length..].iter() {
-        let mut is_sum = false;
-
-        'outer: for i in 0..preamble_length {
-            let pre_i = preamble[i];
-
-            for j in i+1..preamble_length {
-                if pre_i + preamble[j] == *n {
-                    is_sum = true;
-                    break 'outer;
+    'outer: for n in data[preamble_length..].iter() {
+         for (i, pre_i) in preamble.iter().enumerate() {
+            for pre_j in preamble[i+1..].iter() {
+                if *pre_i + *pre_j == *n {
+                    preamble_pos += 1;
+                    preamble = &data[preamble_pos..preamble_pos+preamble_length];
+                    continue 'outer;
                 }
             }
         }
 
-        if !is_sum {
-            return *n;
-        }
-
-        preamble_pos += 1;
-        preamble = &data[preamble_pos..preamble_pos+preamble_length];
+        return *n;
     }
 
     return 0;
