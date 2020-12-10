@@ -5,9 +5,9 @@ fn main() {
 
     print_time("Load", dur_load);
 
-    let (list, dur_parse) = run_many(1000, || parse_input(&input));
-    let (res_part1, dur_part1) = run_many(1000, || part1(&list));
-    let (res_part2, dur_part2) = run_many(100000, || part2(&list));
+    let (list, dur_parse) = run_many(10000, || parse_input(&input));
+    let (res_part1, dur_part1) = run_many(10000, || part1(&list));
+    let (res_part2, dur_part2) = run_many(10000, || part2(&list));
 
     print_result("P1", res_part1);
     print_result("P2", res_part2);
