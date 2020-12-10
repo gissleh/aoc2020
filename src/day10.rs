@@ -70,31 +70,32 @@ const NEWLINE: u8 = '\n' as u8;
 const ZERO: u8 = '0' as u8;
 
 fn parse_input(s: &[u8]) -> Vec<u32> {
-    let mut map: Vec<bool> = vec![false; 128];
-    let mut count = 0;
+    let mut res: Vec<u32> = vec![0; 128];
     let mut current = 0;
 
     for b in s.iter() {
         if *b == NEWLINE {
-            while map.len() <= current {
-                map.push(false);
+            while current >= res.len() {
+                res.push(0);
             }
-            map[current] = true;
+
+            res[current] = 1;
             current = 0;
         } else {
             current *= 10;
             current += (b - ZERO) as usize;
         }
-
-        count += 1;
     }
 
-    let mut res = Vec::with_capacity(count);
-    for (i, n) in map.iter().enumerate() {
-        if *n {
-            res.push(i as u32);
+    let mut pos = 0usize;
+    for i in 1..res.len() {
+        if res[i] == 1 {
+            res[pos] = i as u32;
+            pos += 1;
         }
     }
+
+    res.truncate(pos);
 
     res
 }
