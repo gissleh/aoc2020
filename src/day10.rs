@@ -70,28 +70,23 @@ const NEWLINE: u8 = '\n' as u8;
 const ZERO: u8 = '0' as u8;
 
 fn parse_input(s: &[u8]) -> Vec<u32> {
-    let mut res = Vec::with_capacity(1024);
+    let mut res: Vec<bool> = vec![false; 128];
     let mut current = 0;
 
     for b in s.iter() {
         if *b == NEWLINE {
-            match res.binary_search(&current) {
-                Ok(idx) => {
-                    // Unreachable since the input is all unique numbers.
-                    res.insert(idx, current);
-                },
-                Err(idx) => {
-                    res.insert(idx, current);
-                },
+            while res.len() <= current {
+                res.push(false);
             }
+            res[current] = true;
             current = 0;
         } else {
             current *= 10;
-            current += (b - ZERO) as u32;
+            current += (b - ZERO) as usize;
         }
     }
 
-    res
+    res.iter().enumerate().filter(|(_, b) | **b).map(|(i, _)| i as u32).collect()
 }
 
 #[cfg(test)]
