@@ -16,13 +16,14 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 }
 
-fn part1(lines: &[(u32, u32, u8, Vec<u8>)]) -> u32 {
+fn part1(lines: &[(u32, u32, u8, &str)]) -> u32 {
     let mut count = 0;
 
     for (min, max, pwd_char, password) in lines.iter() {
+        let pwd_char = *pwd_char as char;
         let mut cc: u32 = 0;
-        for c in password.iter() {
-            if *c == *pwd_char {
+        for c in password.chars() {
+            if c == pwd_char {
                 cc += 1;
             }
         }
@@ -35,12 +36,12 @@ fn part1(lines: &[(u32, u32, u8, Vec<u8>)]) -> u32 {
     count
 }
 
-fn part2(lines: &[(u32, u32, u8, Vec<u8>)]) -> u32 {
+fn part2(lines: &[(u32, u32, u8, &str)]) -> u32 {
     let mut count = 0;
 
     for (first, second, pwd_char, password) in lines.iter() {
-        let f = password[(*first - 1) as usize] == *pwd_char;
-        let s = password[(*second - 1) as usize] == *pwd_char;
+        let f = password.as_bytes()[(*first - 1) as usize] == *pwd_char;
+        let s = password.as_bytes()[(*second - 1) as usize] == *pwd_char;
 
         if f != s {
             count += 1;
@@ -50,22 +51,24 @@ fn part2(lines: &[(u32, u32, u8, Vec<u8>)]) -> u32 {
     count
 }
 
-fn parse_input(input: &str) -> Vec<(u32, u32, u8, Vec<u8>)> {
+fn parse_input(input: &str) -> Vec<(u32, u32, u8, &str)> {
     let mut list = Vec::with_capacity(128);
 
     for line in input.lines() {
         let mut min = 0u32;
         let mut max = 0u32;
         let mut pwd_char = 0u8;
-        let mut password: Vec<u8> = Vec::with_capacity(line.len());
+        let mut password = line;
         let mut state = 0;
 
-        for char in line.chars() {
-            if char == '-' || char == ':' {
+        for (i, char) in line.chars().enumerate() {
+            if char == '-' {
                 state += 1;
                 continue;
-            }
-            if char == ' ' {
+            } else if char == ':' {
+                password = &line[i + 2..];
+                break;
+            } else if char == ' ' {
                 continue;
             }
 
@@ -76,13 +79,10 @@ fn parse_input(input: &str) -> Vec<(u32, u32, u8, Vec<u8>)> {
                     max = (max * 10) + (char as u8 - '0' as u8) as u32
                 }
             } else {
-                if state == 1 {
-                    pwd_char = char as u8;
-                } else {
-                    password.push(char as u8);
-                }
+                pwd_char = char as u8;
             }
         }
+
 
         list.push((min, max, pwd_char, password));
     }
