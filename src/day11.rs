@@ -3,7 +3,6 @@ use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes
 const NEWLINE: u8 = '\n' as u8;
 const SEAT_VACANT: u8 = 'L' as u8;
 const SEAT_OCCUPIED: u8 = '#' as u8;
-const FLOOR: u8 = '.' as u8;
 const EDGE: u8 = 'E' as u8;
 
 fn main() {
@@ -11,7 +10,7 @@ fn main() {
 
     print_time("Load", dur_load);
 
-    let ((grid, width, height), dur_parse) = run_many(1000, || parse_input(&input));
+    let ((grid, width), dur_parse) = run_many(1000, || parse_input(&input));
     let (res_part1, dur_part1) = run_many(1000, || part1(&grid, width));
     let (res_part2, dur_part2) = run_many(1000, || part2(&grid, width));
 
@@ -136,7 +135,7 @@ fn part2(grid: &[u8], width: usize) -> usize {
     }
 }
 
-fn parse_input(input: &[u8]) -> (Vec<u8>, usize, usize) {
+fn parse_input(input: &[u8]) -> (Vec<u8>, usize) {
     let width = input.iter().position(|b| *b == NEWLINE).unwrap();
     let height = input.len() / (width + 1);
 
@@ -150,5 +149,5 @@ fn parse_input(input: &[u8]) -> (Vec<u8>, usize, usize) {
         dst.copy_from_slice(src);
     }
 
-    (res, width + 2, height + 2)
+    (res, width + 2)
 }
