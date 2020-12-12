@@ -1,4 +1,4 @@
-use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
+use common::aoc::{load_input_bytes, print_result, print_time, run_many, run_once};
 
 const DIRECTIONS: [(i32, i32); 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
 const C_FORWARD: u8 = 'F' as u8;
@@ -18,15 +18,15 @@ fn main() {
 
     let (instructions, dur_parse) = run_many(1000, || parse_input(&input));
     let (res_part1, dur_part1) = run_many(100000, || part1(&instructions));
-    //let (res_part2, dur_part2) = run_many(100000, || part2(&instructions));
+    let (res_part2, dur_part2) = run_many(100000, || part2(&instructions));
 
     print_result("P1", res_part1);
-    //print_result("P2", res_part2);
+    print_result("P2", res_part2);
 
     print_time("Parse", dur_parse);
     print_time("P1", dur_part1);
-    //print_time("P2", dur_part2);
-    //print_time("Total", dur_parse + dur_part1 + dur_part2);
+    print_time("P2", dur_part2);
+    print_time("Total", dur_parse + dur_part1 + dur_part2);
 }
 
 fn part1(instructions: &[Instruction]) -> i32 {
@@ -40,12 +40,39 @@ fn part1(instructions: &[Instruction]) -> i32 {
                 x += DIRECTIONS[dir].0 * l;
                 y += DIRECTIONS[dir].1 * l;
             }
-            Instruction::Turn(off) => {
-                dir = (dir + off) % 4;
+            Instruction::Turn(n) => {
+                dir = (dir - *n as usize) % 4;
             }
             Instruction::Move(mx, my) => {
                 x += mx;
                 y += my;
+            }
+        }
+    }
+
+    x.abs() + y.abs()
+}
+
+fn part2(instructions: &[Instruction]) -> i32 {
+    let mut x = 0;
+    let mut y = 0;
+    let mut wx = 10;
+    let mut wy = -1;
+
+    for instruction in instructions.iter() {
+        match instruction {
+            Instruction::Forward(l) => {
+                x += wx * l;
+                y += wy * l;
+            }
+            Instruction::Turn(n) => {
+                let (rx, ry) = rotate(wx, wy, *n);
+                wx = rx;
+                wy = ry;
+            }
+            Instruction::Move(mx, my) => {
+                wx += mx;
+                wy += my;
             }
         }
     }
@@ -58,15 +85,14 @@ fn parse_input(input: &[u8]) -> Vec<Instruction> {
     let mut current_length = 0;
     let mut current_inst = 0u8;
     let mut parsing_number = false;
-    let minus_one = usize::max_value();
 
     for c in input.iter() {
         if parsing_number {
             if *c == C_NEWLINE {
                 res.push(match current_inst {
                     C_FORWARD => Instruction::Forward(current_length),
-                    C_LEFT => Instruction::Turn(minus_one * (current_length as usize / 90)),
-                    C_RIGHT => Instruction::Turn(current_length as usize / 90),
+                    C_LEFT => Instruction::Turn(-(current_length / 90)),
+                    C_RIGHT => Instruction::Turn(current_length / 90),
                     C_EAST => Instruction::Move(current_length, 0),
                     C_SOUTH => Instruction::Move(0, current_length),
                     C_WEST => Instruction::Move(-current_length, 0),
@@ -89,9 +115,19 @@ fn parse_input(input: &[u8]) -> Vec<Instruction> {
     res
 }
 
+fn rotate(x: i32, y: i32, n: i32) -> (i32, i32) {
+    match n {
+        0 => (x, y),
+        -3 | 1 => (-y, x),
+        -2 | 2 => (-x, -y),
+        -1 | 3 => (y, -x),
+        _ => panic!("Incorrect rotation"),
+    }
+}
+
 #[derive(Debug)]
 enum Instruction {
     Move(i32, i32),
-    Turn(usize),
-    Forward(i32)
+    Turn(i32),
+    Forward(i32),
 }
