@@ -6,10 +6,10 @@ const C_LEFT: u8 = 'L' as u8;
 const C_RIGHT: u8 = 'R' as u8;
 const C_EAST: u8 = 'E' as u8;
 const C_SOUTH: u8 = 'S' as u8;
-const C_WEST: u8 = 'N' as u8;
-const C_NORTH: u8 = 'W' as u8;
-const C_NEWLINE: u8 = 'N' as u8;
+const C_WEST: u8 = 'W' as u8;
+const C_NORTH: u8 = 'N' as u8;
 const C_ZERO: u8 = '0' as u8;
+const C_NEWLINE: u8 = '\n' as u8;
 
 fn main() {
     let (input, dur_load) = run_once(|| load_input_bytes("day12"));
@@ -37,8 +37,8 @@ fn part1(instructions: &[Instruction]) -> i32 {
     for instruction in instructions.iter() {
         match instruction {
             Instruction::Forward(l) => {
-                x += DIRECTIONS[dir].0;
-                y += DIRECTIONS[dir].1;
+                x += DIRECTIONS[dir].0 * l;
+                y += DIRECTIONS[dir].1 * l;
             }
             Instruction::Turn(off) => {
                 dir = (dir + off) % 4;
@@ -61,17 +61,15 @@ fn parse_input(input: &[u8]) -> Vec<Instruction> {
     let minus_one = usize::max_value();
 
     for c in input.iter() {
-        println!("{} {} {} {}", c as char, parsing_number, current_inst as char, current_length);
-
         if parsing_number {
             if *c == C_NEWLINE {
                 res.push(match current_inst {
                     C_FORWARD => Instruction::Forward(current_length),
-                    C_LEFT => Instruction::Turn(minus_one * current_length as usize / 90),
+                    C_LEFT => Instruction::Turn(minus_one * (current_length as usize / 90)),
                     C_RIGHT => Instruction::Turn(current_length as usize / 90),
-                    C_RIGHT => Instruction::Move(current_length, 0),
+                    C_EAST => Instruction::Move(current_length, 0),
                     C_SOUTH => Instruction::Move(0, current_length),
-                    C_LEFT => Instruction::Move(-current_length, 0),
+                    C_WEST => Instruction::Move(-current_length, 0),
                     C_NORTH => Instruction::Move(0, -current_length),
                     _ => panic!(format!("Unknown instruction: {}", current_inst as char)),
                 });
@@ -91,6 +89,7 @@ fn parse_input(input: &[u8]) -> Vec<Instruction> {
     res
 }
 
+#[derive(Debug)]
 enum Instruction {
     Move(i32, i32),
     Turn(usize),
