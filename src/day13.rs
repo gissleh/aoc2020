@@ -45,15 +45,13 @@ fn part1(current: i64, shuttles: &[Shuttle]) -> i64 {
 
 fn part2(shuttles: &[Shuttle]) -> i64 {
     let prod = shuttles.iter().map(|Shuttle(id, _)| *id as i64).product::<i64>();
-
     let mut sum = 0;
 
     for Shuttle(id, minutes) in shuttles.iter() {
-        let modulus = *id;
-        let residue = *id - (minutes % *id);
+        let remaining_minutes = *id - (minutes % *id);
+        let p = prod / *id;
 
-        let p = prod / modulus;
-        sum += residue * mod_inv(p, modulus).unwrap() * p
+        sum += remaining_minutes * mod_inv(p, *id).unwrap() * p
     }
 
     sum % prod
