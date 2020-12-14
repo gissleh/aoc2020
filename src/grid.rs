@@ -43,3 +43,19 @@ where
         }
     }
 }
+
+impl<T> FixedGrid<T>
+    where
+        T: Eq,
+{
+    pub fn count(&self, v: T) -> usize {
+        let mut count = 0;
+        for v2 in self.data.iter() {
+            if v == *v2 {
+                count += 1;
+            }
+        }
+
+        count
+    }
+}
