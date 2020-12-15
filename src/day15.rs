@@ -1,5 +1,4 @@
 use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
-use rustc_hash::FxHashMap;
 
 const C_ZERO: u8 = '0' as u8;
 const C_COMMA: u8 = ',' as u8;
@@ -23,11 +22,11 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 }
 
-fn part1(starting_numbers: &[u32]) -> u32 {
+fn part1(starting_numbers: &[usize]) -> usize {
     let mut cache = [0usize; 2020];
 
     for (i, n) in starting_numbers.iter().enumerate() {
-        cache[*n as usize] = i + 1;
+        cache[*n] = i + 1;
     }
 
     let mut current = *starting_numbers.last().unwrap();
@@ -36,25 +35,24 @@ fn part1(starting_numbers: &[u32]) -> u32 {
         let last_turn = turn - 1;
         let last = current;
 
-        let cached = cache[last as usize];
+        let cached = cache[last];
         if cached != 0 {
-            current = (last_turn - cached) as u32;
+            current = last_turn - cached;
         } else {
             current = 0;
         }
 
-        cache[last as usize] = last_turn;
+        cache[last] = last_turn;
     }
 
     current
 }
 
-fn part2(starting_numbers: &[u32]) -> u32 {
-    let mut cache = [0usize; 65536];
-    let mut cache2 = FxHashMap::default();
+fn part2(starting_numbers: &[usize]) -> usize {
+    let mut cache = vec![0usize; 30000000];
 
     for (i, n) in starting_numbers.iter().enumerate() {
-        cache[*n as usize] = i + 1;
+        cache[*n] = i + 1;
     }
 
     let mut current = *starting_numbers.last().unwrap();
@@ -63,29 +61,20 @@ fn part2(starting_numbers: &[u32]) -> u32 {
         let last_turn = turn - 1;
         let last = current;
 
-        if last < 65536 {
-            if cache[last as usize] != 0 {
-                current = (last_turn - cache[last as usize]) as u32;
-            } else {
-                current = 0;
-            }
-
-            cache[last as usize] = last_turn;
+        let cached = unsafe { *cache.get_unchecked(last) };
+        if cached != 0 {
+            current = last_turn - cached;
         } else {
-            if let Some(cached) = cache2.get(&last) {
-                current = (last_turn - cached) as u32;
-            } else {
-                current = 0;
-            }
-
-            cache2.insert(last, last_turn);
+            current = 0;
         }
+
+        unsafe { *cache.get_unchecked_mut(last) = last_turn }
     }
 
     current
 }
 
-fn parse_input(input: &[u8]) -> Vec<u32> {
+fn parse_input(input: &[u8]) -> Vec<usize> {
     let mut results = Vec::with_capacity(8);
     let mut current = 0;
     for c in input.iter() {
@@ -93,7 +82,7 @@ fn parse_input(input: &[u8]) -> Vec<u32> {
             results.push(current);
             current = 0;
         } else {
-            current = (current * 10) + (*c - C_ZERO) as u32;
+            current = (current * 10) + (*c - C_ZERO) as usize;
         }
     }
 
@@ -104,13 +93,13 @@ fn parse_input(input: &[u8]) -> Vec<u32> {
 mod tests {
     use super::*;
 
-    const EXAMPLE_1: &[u32] = &[0,3,6];
-    const EXAMPLE_2: &[u32] = &[1,3,2];
-    const EXAMPLE_3: &[u32] = &[2,1,3];
-    const EXAMPLE_4: &[u32] = &[1,2,3];
-    const EXAMPLE_5: &[u32] = &[2,3,1];
-    const EXAMPLE_6: &[u32] = &[3,2,1];
-    const EXAMPLE_7: &[u32] = &[3,1,2];
+    const EXAMPLE_1: &[usize] = &[0,3,6];
+    const EXAMPLE_2: &[usize] = &[1,3,2];
+    const EXAMPLE_3: &[usize] = &[2,1,3];
+    const EXAMPLE_4: &[usize] = &[1,2,3];
+    const EXAMPLE_5: &[usize] = &[2,3,1];
+    const EXAMPLE_6: &[usize] = &[3,2,1];
+    const EXAMPLE_7: &[usize] = &[3,1,2];
 
     #[test]
     fn test_part1() {
