@@ -113,6 +113,10 @@ path = "src/day25.rs"
 name = "year2017-day21"
 path = "src/year2017-day21.rs"
 
+[[bin]]
+name = "year2017-day23"
+path = "src/year2017-day23.rs"
+
 [dependencies]
 chrono = "0.4.6"
 time = "0.1.40"
