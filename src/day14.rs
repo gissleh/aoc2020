@@ -1,5 +1,6 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
 use std::collections::BTreeMap;
+use rustc_hash::FxHashMap;
 
 const ZERO_U64: u64 = '0' as u64;
 
@@ -42,7 +43,7 @@ fn part1(instructions: &[Instruction]) -> u64 {
 }
 
 fn part2(instructions: &[Instruction]) -> u64 {
-    let mut memory = BTreeMap::new();
+    let mut memory = FxHashMap::default();
     let mut or_mask = 0u64;
     let mut flippers = Vec::with_capacity(36);
     let mut flipper_combos = 0u64;
