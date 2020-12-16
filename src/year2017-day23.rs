@@ -1,4 +1,5 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
+use num::range_step;
 
 const C_A: u8 = 'a' as u8;
 const C_Z: u8 = 'z' as u8;
@@ -11,9 +12,11 @@ fn main() {
 
     let (instructions, dur_parse) = run_many(1000, || parse_input(&input));
     let (res_part1, dur_part1) = run_many(1000, || part1(&instructions));
-    let (res_part2, dur_part2) = run_many(1, || part2(&instructions));
 
     print_result("P1", res_part1);
+
+    let (res_part2, dur_part2) = run_many(1, || part2_compiled());
+
     print_result("P2", res_part2);
 
     print_time("Parse", dur_parse);
@@ -29,18 +32,34 @@ fn part1(instructions: &[Instruction]) -> u64 {
     program.muls
 }
 
+#[allow(dead_code)]
 fn part2(instructions: &[Instruction]) -> i64 {
     let mut program = Program::from(instructions);
     program.registers[0] = 1;
     let mut n = 0u64;
     while !program.run() {
         n += 1;
-        if n % 10000000 == 0{
+        if n % 100000000 == 0{
             println!("{:?}", program.registers);
         }
     }
 
     program.registers[7]
+}
+
+fn part2_compiled() -> i64 {
+    let mut h = 0;
+
+    for b in range_step(108100, 125100+17, 17) { // 31
+        for e in 2..b {
+            if b % e == 0 {
+                h += 1; // 25
+                break;
+            }
+        }
+    }
+
+    h
 }
 
 struct Program<'a> {
