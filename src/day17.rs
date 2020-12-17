@@ -20,6 +20,18 @@ fn main() {
     print_time("P1", dur_part1);
     print_time("P2", dur_part2);
     print_time("Total", dur_parse + dur_part1 + dur_part2);
+
+    println!("--- Debug benches ---");
+
+    let (padded3, dur_padded3) = run_many(100000, || grid.padded3(7, b'.'));
+    let (padded4, dur_padded4) = run_many(100000, || grid.padded4(7, b'.'));
+    let (_, dur_offsets3) = run_many(100000, || padded3.neighbor_offsets3());
+    let (_, dur_offsets4) = run_many(100000, || padded4.neighbor_offsets4());
+
+    print_time("padded3", dur_padded3);
+    print_time("padded4", dur_padded4);
+    print_time("neighbor_offsets3", dur_offsets3);
+    print_time("neighbor_offsets4", dur_offsets4);
 }
 
 fn part1(grid: &CubeGrid) -> usize {
@@ -58,7 +70,7 @@ fn part2(grid: &CubeGrid) -> usize {
 }
 
 fn parts_common(mut grid: CubeGrid, offsets: &[usize], mut start: usize, mut end: usize) -> usize {
-    let mut changes = Vec::with_capacity(grid.data.len());
+    let mut changes = Vec::with_capacity(64);
 
     for _ in 0..6 {
         start += offsets[0];
@@ -66,21 +78,24 @@ fn parts_common(mut grid: CubeGrid, offsets: &[usize], mut start: usize, mut end
 
         for i in start..end {
             let mut count = 0;
-            let active = grid.data[i] == PIXEL_ON;
+            let active = unsafe { *grid.data.get_unchecked(i) } == PIXEL_ON;
             for offset in offsets.iter() {
-                let i = i + offset;
-                if grid.data[i] == PIXEL_ON {
+                if unsafe { *grid.data.get_unchecked(i + offset) } == PIXEL_ON {
                     count += 1;
                     if count == 4 {
                         break;
                     }
                 }
             }
-            if active && (count < 2 || count > 3) {
-                changes.push((i, PIXEL_OFF));
-            }
-            if !active && count == 3 {
-                changes.push((i, PIXEL_ON));
+
+            if active {
+                if count < 2 || count == 4 {
+                    changes.push((i, PIXEL_OFF));
+                }
+            } else {
+                if count == 3 {
+                    changes.push((i, PIXEL_ON));
+                }
             }
         }
 
