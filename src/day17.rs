@@ -23,32 +23,53 @@ fn main() {
 }
 
 fn part1(grid: &CubeGrid) -> usize {
+    let original_width = grid.width;
+    let original_height = grid.height;
     let grid = grid.padded3(7, PIXEL_OFF);
     let offsets = grid.neighbor_offsets3();
-    let start = (grid.width * grid.height) + grid.width + 1;
-    let end = grid.data.len() - (grid.width * grid.height) - (grid.width + 1);
+    let (start, end) = get_initial_bounds(original_width, original_height, &grid);
 
     parts_common(grid, &offsets, start, end)
+}
+
+fn get_initial_bounds(original_width: usize, original_height: usize, grid: &CubeGrid) -> (usize, usize) {
+    let center = grid.data.len() / 2;
+    let first_run = (original_width / 2) + ((original_height / 2) * grid.width);
+    let mut start = center - first_run;
+    let mut end = center + first_run;
+
+    if original_width & 1 == 1 {
+        end += 1;
+    } else {
+        start += grid.width / 2;
+        end -= grid.width / 2;
+    }
+    (start, end)
 }
 
 fn part2(grid: &CubeGrid) -> usize {
+    let original_width = grid.width;
+    let original_height = grid.height;
     let grid = grid.padded4(7, PIXEL_OFF);
     let offsets = grid.neighbor_offsets4();
-    let start = (grid.width * grid.height * grid.depth) + (grid.width * grid.height) + grid.width + 1;
-    let end = grid.data.len() - (grid.width * grid.height * grid.depth) - (grid.width * grid.height) - (grid.width + 1);
+    let (start, end) = get_initial_bounds(original_width, original_height, &grid);
 
     parts_common(grid, &offsets, start, end)
 }
 
-fn parts_common(mut grid: CubeGrid, offsets: &[usize], start: usize, end: usize) -> usize {
+fn parts_common(mut grid: CubeGrid, offsets: &[usize], mut start: usize, mut end: usize) -> usize {
     let mut changes = Vec::with_capacity(grid.data.len());
 
     for _ in 0..6 {
+        start += offsets[0];
+        end += offsets[offsets.len() - 1];
+
         for i in start..end {
             let mut count = 0;
             let active = grid.data[i] == PIXEL_ON;
             for offset in offsets.iter() {
-                if grid.data[i + offset] == PIXEL_ON {
+                let i = i + offset;
+                if grid.data[i] == PIXEL_ON {
                     count += 1;
                     if count == 4 {
                         break;
