@@ -1,4 +1,4 @@
-use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
+use common::aoc::{load_input_bytes, print_result, print_time, run_many, run_once};
 use common::grid::FixedGrid;
 
 const C_SLASH: u8 = '/' as u8;
@@ -28,7 +28,7 @@ fn main() {
 fn part1(rules: &[Rule], iterations: usize) -> usize {
     let mut grid_width = 3;
     for _ in 0..iterations {
-        let key_width = if grid_width & 1 == 1 {3} else {2};
+        let key_width = if grid_width & 1 == 1 { 3 } else { 2 };
         grid_width = (key_width + 1) * (grid_width / key_width)
     }
 
@@ -42,7 +42,7 @@ fn part1(rules: &[Rule], iterations: usize) -> usize {
     grid.set(2, 2, C_HASH);
 
     for _ in 0..iterations {
-        let key_width = if width & 1 == 1 {3} else {2};
+        let key_width = if width & 1 == 1 { 3 } else { 2 };
         let result_width = key_width + 1;
         let chunk_width = width / key_width;
 
@@ -107,7 +107,7 @@ fn parse_input(input: &[u8]) -> Vec<Rule> {
 
         let mut dup_list = Vec::new();
         'duploop: for (i, k) in keys.iter().enumerate() {
-            for k2 in keys[i+1..].iter() {
+            for k2 in keys[i + 1..].iter() {
                 if k == k2 {
                     dup_list.push(i - dup_list.len());
                     continue 'duploop;
@@ -118,8 +118,9 @@ fn parse_input(input: &[u8]) -> Vec<Rule> {
             keys.remove(dup);
         }
 
-        rules.push( Rule{
-            keys, result: RuleKey::from_input(&line[pos+4..])
+        rules.push(Rule {
+            keys,
+            result: RuleKey::from_input(&line[pos + 4..]),
         });
     }
 
@@ -241,18 +242,18 @@ impl RuleKey {
             }
         }
 
-        RuleKey{width, pattern}
+        RuleKey { width, pattern }
     }
 
     fn from_grid(grid: &FixedGrid<u8>, x: usize, y: usize, width: usize) -> RuleKey {
         let mut pattern = Vec::with_capacity(width * width);
 
-        for y in y..y+width {
-            for x in x..x+width {
+        for y in y..y + width {
+            for x in x..x + width {
                 pattern.push(grid.get(x, y));
             }
         }
 
-        RuleKey{width, pattern}
+        RuleKey { width, pattern }
     }
 }

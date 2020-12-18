@@ -1,4 +1,4 @@
-use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
+use common::aoc::{load_input_bytes, print_result, print_time, run_many, run_once};
 
 const C_ZERO: u8 = '0' as u8;
 const C_COMMA: u8 = ',' as u8;
@@ -93,13 +93,13 @@ fn parse_input(input: &[u8]) -> Vec<usize> {
 mod tests {
     use super::*;
 
-    const EXAMPLE_1: &[usize] = &[0,3,6];
-    const EXAMPLE_2: &[usize] = &[1,3,2];
-    const EXAMPLE_3: &[usize] = &[2,1,3];
-    const EXAMPLE_4: &[usize] = &[1,2,3];
-    const EXAMPLE_5: &[usize] = &[2,3,1];
-    const EXAMPLE_6: &[usize] = &[3,2,1];
-    const EXAMPLE_7: &[usize] = &[3,1,2];
+    const EXAMPLE_1: &[usize] = &[0, 3, 6];
+    const EXAMPLE_2: &[usize] = &[1, 3, 2];
+    const EXAMPLE_3: &[usize] = &[2, 1, 3];
+    const EXAMPLE_4: &[usize] = &[1, 2, 3];
+    const EXAMPLE_5: &[usize] = &[2, 3, 1];
+    const EXAMPLE_6: &[usize] = &[3, 2, 1];
+    const EXAMPLE_7: &[usize] = &[3, 1, 2];
 
     #[test]
     fn test_part1() {

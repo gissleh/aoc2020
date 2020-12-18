@@ -1,4 +1,4 @@
-use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
+use common::aoc::{load_input_bytes, print_result, print_time, run_many, run_once};
 
 fn main() {
     let (input, dur_load) = run_once(|| load_input_bytes("day09"));
@@ -26,11 +26,11 @@ fn part1(data: &[u64], preamble_length: usize) -> (u64, usize) {
     let mut preamble = &data[0..preamble_length];
 
     'outer: for (i, n) in data[preamble_length..].iter().enumerate() {
-         for (i, pre_i) in preamble.iter().enumerate() {
-            for pre_j in preamble[i+1..].iter() {
+        for (i, pre_i) in preamble.iter().enumerate() {
+            for pre_j in preamble[i + 1..].iter() {
                 if *pre_i + *pre_j == *n {
                     preamble_pos += 1;
-                    preamble = &data[preamble_pos..preamble_pos+preamble_length];
+                    preamble = &data[preamble_pos..preamble_pos + preamble_length];
                     continue 'outer;
                 }
             }
@@ -131,7 +131,6 @@ fn part2_alt(data: &[u64], target_pos: usize) -> u64 {
                 }
             }
         }
-
     }
 
     let mut smallest = target;
@@ -168,16 +167,20 @@ fn parse_input(s: &[u8]) -> Vec<u64> {
     res
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    const EXAMPLE: &'static[u64] = &[35, 20, 15, 25, 47, 40, 62, 55, 65, 95, 102, 117, 150, 182, 127, 219, 299, 277, 309, 576];
+    const EXAMPLE: &'static [u64] = &[
+        35, 20, 15, 25, 47, 40, 62, 55, 65, 95, 102, 117, 150, 182, 127, 219, 299, 277, 309, 576,
+    ];
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(EXAMPLE, 5), (127, EXAMPLE.iter().position(|p| *p == 127).unwrap()));
+        assert_eq!(
+            part1(EXAMPLE, 5),
+            (127, EXAMPLE.iter().position(|p| *p == 127).unwrap())
+        );
     }
 
     #[test]
@@ -187,6 +190,9 @@ mod tests {
 
     #[test]
     fn test_part2_alt() {
-        assert_eq!(part2_alt(EXAMPLE, EXAMPLE.iter().position(|p| *p == 127).unwrap()), 62);
+        assert_eq!(
+            part2_alt(EXAMPLE, EXAMPLE.iter().position(|p| *p == 127).unwrap()),
+            62
+        );
     }
 }

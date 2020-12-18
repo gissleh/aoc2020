@@ -45,8 +45,8 @@ where
 }
 
 impl<T> FixedGrid<T>
-    where
-        T: Eq,
+where
+    T: Eq,
 {
     pub fn count(&self, v: T) -> usize {
         let mut count = 0;

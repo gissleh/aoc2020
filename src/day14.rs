@@ -1,6 +1,6 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
-use std::collections::BTreeMap;
 use rustc_hash::FxHashMap;
+use std::collections::BTreeMap;
 
 const ZERO_U64: u64 = '0' as u64;
 
@@ -29,10 +29,14 @@ fn part1(instructions: &[Instruction]) -> u64 {
 
     for instruction in instructions.iter() {
         match instruction {
-            Instruction::Mask{new_or_mask, new_and_mask, new_flippers: _} => {
+            Instruction::Mask {
+                new_or_mask,
+                new_and_mask,
+                new_flippers: _,
+            } => {
                 or_mask = *new_or_mask;
                 and_mask = *new_and_mask;
-            },
+            }
             Instruction::Memory(idx, value) => {
                 memory[*idx as usize] = (*value | or_mask) & and_mask;
             }
@@ -50,7 +54,11 @@ fn part2(instructions: &[Instruction]) -> u64 {
 
     for instruction in instructions.iter() {
         match instruction {
-            Instruction::Mask{new_or_mask, new_and_mask: _, new_flippers} => {
+            Instruction::Mask {
+                new_or_mask,
+                new_and_mask: _,
+                new_flippers,
+            } => {
                 or_mask = *new_or_mask;
                 flippers.clear();
                 flipper_combos = 1;
@@ -63,7 +71,7 @@ fn part2(instructions: &[Instruction]) -> u64 {
 
                     current_bit >>= 1;
                 }
-            },
+            }
             Instruction::Memory(idx, value) => {
                 let base_idx = idx | or_mask;
 
@@ -91,7 +99,11 @@ fn part2(instructions: &[Instruction]) -> u64 {
 
 #[derive(Debug)]
 enum Instruction {
-    Mask{new_or_mask: u64, new_and_mask: u64, new_flippers: u64},
+    Mask {
+        new_or_mask: u64,
+        new_and_mask: u64,
+        new_flippers: u64,
+    },
     Memory(u64, u64),
 }
 
@@ -114,16 +126,26 @@ fn parse_input(input: &str) -> Vec<Instruction> {
             let mut new_flippers = 0u64;
             for c in right.chars() {
                 match c {
-                    '1' => { new_or_mask |= current_bit; }
-                    '0' => { new_and_mask ^= current_bit; }
-                    'X' => { new_flippers |= current_bit; }
-                    _ => panic!("bad bit")
+                    '1' => {
+                        new_or_mask |= current_bit;
+                    }
+                    '0' => {
+                        new_and_mask ^= current_bit;
+                    }
+                    'X' => {
+                        new_flippers |= current_bit;
+                    }
+                    _ => panic!("bad bit"),
                 }
 
                 current_bit >>= 1;
             }
 
-            instructions.push(Instruction::Mask{ new_or_mask, new_and_mask, new_flippers });
+            instructions.push(Instruction::Mask {
+                new_or_mask,
+                new_and_mask,
+                new_flippers,
+            });
         } else {
             instructions.push(Instruction::Memory(
                 parse_u64(&left[4..left.len() - 1]),

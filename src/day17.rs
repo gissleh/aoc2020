@@ -1,4 +1,4 @@
-use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
+use common::aoc::{load_input_bytes, print_result, print_time, run_many, run_once};
 
 const NEWLINE: u8 = '\n' as u8;
 const PIXEL_OFF: u8 = '.' as u8;
@@ -44,7 +44,11 @@ fn part1(grid: &CubeGrid) -> usize {
     parts_common(grid, &offsets, start, end)
 }
 
-fn get_initial_bounds(original_width: usize, original_height: usize, grid: &CubeGrid) -> (usize, usize) {
+fn get_initial_bounds(
+    original_width: usize,
+    original_height: usize,
+    grid: &CubeGrid,
+) -> (usize, usize) {
     let center = grid.data.len() / 2;
     let first_run = (original_width / 2) + ((original_height / 2) * grid.width);
     let mut start = center - first_run;
@@ -127,17 +131,32 @@ impl CubeGrid {
         let nwh = w * h * neg1;
 
         [
-            nwh-w-1, nwh-w, nwh-w+1,
-            nwh - 1, nwh, nwh + 1,
-            nwh+w-1, nwh+w, nwh+w+1,
-
-            nw-1, nw, nw+1,
-            neg1, /*0,*/ 1,
-            w-1, w, w+1,
-
-            wh-w-1, wh-w, wh-w+1,
-            wh - 1, wh, wh + 1,
-            wh+w-1, wh+w, wh+w+1,
+            nwh - w - 1,
+            nwh - w,
+            nwh - w + 1,
+            nwh - 1,
+            nwh,
+            nwh + 1,
+            nwh + w - 1,
+            nwh + w,
+            nwh + w + 1,
+            nw - 1,
+            nw,
+            nw + 1,
+            neg1,
+            /*0,*/ 1,
+            w - 1,
+            w,
+            w + 1,
+            wh - w - 1,
+            wh - w,
+            wh - w + 1,
+            wh - 1,
+            wh,
+            wh + 1,
+            wh + w - 1,
+            wh + w,
+            wh + w + 1,
         ]
     }
 
@@ -153,43 +172,86 @@ impl CubeGrid {
         let nwhd = whd * neg1;
 
         [
-            nwhd+nwh-w-1, nwhd+nwh-w, nwhd+nwh-w+1,
-            nwhd+nwh - 1, nwhd+nwh, nwhd+nwh + 1,
-            nwhd+nwh+w-1, nwhd+nwh+w, nwhd+nwh+w+1,
-
-            nwhd+nw-1, nwhd+nw, nwhd+nw+1,
-            nwhd-1, nwhd, nwhd+1,
-            nwhd+w-1, nwhd+w, nwhd+w+1,
-
-            nwhd+wh-w-1, nwhd+wh-w, nwhd+wh-w+1,
-            nwhd+wh - 1, nwhd+wh, nwhd+wh + 1,
-            nwhd+wh+w-1, nwhd+wh+w, nwhd+wh+w+1,
-
-
-            nwh-w-1, nwh-w, nwh-w+1,
-            nwh - 1, nwh, nwh + 1,
-            nwh+w-1, nwh+w, nwh+w+1,
-
-            nw-1, nw, nw+1,
-            neg1, /*0,*/ 1,
-            w-1, w, w+1,
-
-            wh-w-1, wh-w, wh-w+1,
-            wh - 1, wh, wh + 1,
-            wh+w-1, wh+w, wh+w+1,
-
-
-            whd+nwh-w-1, whd+nwh-w, whd+nwh-w+1,
-            whd+nwh - 1, whd+nwh, whd+nwh + 1,
-            whd+nwh+w-1, whd+nwh+w, whd+nwh+w+1,
-
-            whd+nw-1, whd+nw, whd+nw+1,
-            whd-1, whd, whd+1,
-            whd+w-1, whd+w, whd+w+1,
-
-            whd+wh-w-1, whd+wh-w, whd+wh-w+1,
-            whd+wh - 1, whd+wh, whd+wh + 1,
-            whd+wh+w-1, whd+wh+w, whd+wh+w+1,
+            nwhd + nwh - w - 1,
+            nwhd + nwh - w,
+            nwhd + nwh - w + 1,
+            nwhd + nwh - 1,
+            nwhd + nwh,
+            nwhd + nwh + 1,
+            nwhd + nwh + w - 1,
+            nwhd + nwh + w,
+            nwhd + nwh + w + 1,
+            nwhd + nw - 1,
+            nwhd + nw,
+            nwhd + nw + 1,
+            nwhd - 1,
+            nwhd,
+            nwhd + 1,
+            nwhd + w - 1,
+            nwhd + w,
+            nwhd + w + 1,
+            nwhd + wh - w - 1,
+            nwhd + wh - w,
+            nwhd + wh - w + 1,
+            nwhd + wh - 1,
+            nwhd + wh,
+            nwhd + wh + 1,
+            nwhd + wh + w - 1,
+            nwhd + wh + w,
+            nwhd + wh + w + 1,
+            nwh - w - 1,
+            nwh - w,
+            nwh - w + 1,
+            nwh - 1,
+            nwh,
+            nwh + 1,
+            nwh + w - 1,
+            nwh + w,
+            nwh + w + 1,
+            nw - 1,
+            nw,
+            nw + 1,
+            neg1,
+            /*0,*/ 1,
+            w - 1,
+            w,
+            w + 1,
+            wh - w - 1,
+            wh - w,
+            wh - w + 1,
+            wh - 1,
+            wh,
+            wh + 1,
+            wh + w - 1,
+            wh + w,
+            wh + w + 1,
+            whd + nwh - w - 1,
+            whd + nwh - w,
+            whd + nwh - w + 1,
+            whd + nwh - 1,
+            whd + nwh,
+            whd + nwh + 1,
+            whd + nwh + w - 1,
+            whd + nwh + w,
+            whd + nwh + w + 1,
+            whd + nw - 1,
+            whd + nw,
+            whd + nw + 1,
+            whd - 1,
+            whd,
+            whd + 1,
+            whd + w - 1,
+            whd + w,
+            whd + w + 1,
+            whd + wh - w - 1,
+            whd + wh - w,
+            whd + wh - w + 1,
+            whd + wh - 1,
+            whd + wh,
+            whd + wh + 1,
+            whd + wh + w - 1,
+            whd + wh + w,
+            whd + wh + w + 1,
         ]
     }
 
@@ -200,21 +262,25 @@ impl CubeGrid {
         let mut data = vec![value; width * height * depth];
 
         for sz in 0..self.depth {
-           for sy in 0..self.height {
-               let source_start = (sz * self.width * self.height) + (sy * self.width);
-               let source_end = source_start + self.width;
-               let src = &self.data[source_start..source_end];
+            for sy in 0..self.height {
+                let source_start = (sz * self.width * self.height) + (sy * self.width);
+                let source_end = source_start + self.width;
+                let src = &self.data[source_start..source_end];
 
-               let dest_start = ((sz+padding) * (width * height)) + ((sy+padding) * (width)) + padding;
-               let dest_end = dest_start + self.width;
-               let dst = &mut data[dest_start..dest_end];
+                let dest_start =
+                    ((sz + padding) * (width * height)) + ((sy + padding) * (width)) + padding;
+                let dest_end = dest_start + self.width;
+                let dst = &mut data[dest_start..dest_end];
 
-               dst.copy_from_slice(src);
-           }
+                dst.copy_from_slice(src);
+            }
         }
 
-        CubeGrid{
-            data, width, height, depth,
+        CubeGrid {
+            data,
+            width,
+            height,
+            depth,
             hyper_depth: 1,
         }
     }
@@ -229,11 +295,16 @@ impl CubeGrid {
         for sw in 0..self.hyper_depth {
             for sz in 0..self.depth {
                 for sy in 0..self.height {
-                    let source_start = (sw * self.width * self.height * self.depth) + (sz * self.width * self.height) + (sy * self.width);
+                    let source_start = (sw * self.width * self.height * self.depth)
+                        + (sz * self.width * self.height)
+                        + (sy * self.width);
                     let source_end = source_start + self.width;
                     let src = &self.data[source_start..source_end];
 
-                    let dest_start = ((sw+padding) * (width * height * depth)) + ((sz+padding) * (width * height)) + ((sy+padding) * (width)) + padding;
+                    let dest_start = ((sw + padding) * (width * height * depth))
+                        + ((sz + padding) * (width * height))
+                        + ((sy + padding) * (width))
+                        + padding;
                     let dest_end = dest_start + self.width;
                     let dst = &mut data[dest_start..dest_end];
 
@@ -242,8 +313,12 @@ impl CubeGrid {
             }
         }
 
-        CubeGrid{
-            data, width, height, depth, hyper_depth
+        CubeGrid {
+            data,
+            width,
+            height,
+            depth,
+            hyper_depth,
         }
     }
 
@@ -255,15 +330,17 @@ impl CubeGrid {
 
         for i in 0..height {
             let src_pos = i * (width + 1);
-            let src = &input[src_pos..src_pos+width];
+            let src = &input[src_pos..src_pos + width];
             let dst_pos = i * width;
-            let dst = &mut data[dst_pos..dst_pos+width];
+            let dst = &mut data[dst_pos..dst_pos + width];
 
             dst.copy_from_slice(src);
         }
 
-        CubeGrid{
-            data, width, height,
+        CubeGrid {
+            data,
+            width,
+            height,
             depth: 1,
             hyper_depth: 1,
         }
@@ -277,7 +354,8 @@ mod tests {
     const START: &[u8] = ".#.
 ..#
 ###
-".as_bytes();
+"
+    .as_bytes();
 
     #[test]
     fn test_part1() {

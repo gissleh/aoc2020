@@ -1,4 +1,4 @@
-use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
+use common::aoc::{load_input_bytes, print_result, print_time, run_many, run_once};
 
 fn main() {
     let (input, dur_load) = run_once(|| load_input_bytes("day10"));
@@ -27,7 +27,8 @@ fn part1(list: &[u32]) -> u32 {
         let diff = n - p;
         if diff == 3 {
             threes += 1;
-        } else if diff == 1 { // The comparison here could be omitted to halve the time, but that felt like cheating.
+        } else if diff == 1 {
+            // The comparison here could be omitted to halve the time, but that felt like cheating.
             ones += 1;
         }
 
@@ -47,7 +48,7 @@ fn part2(list: &[u32]) -> u64 {
 
         let item_i = list[i];
         let mut count = if i == len - 1 { 1 } else { 0 };
-        for j in i+1..len {
+        for j in i + 1..len {
             let item_j = list[j];
             if item_j - item_i > 3 {
                 break;
@@ -105,12 +106,15 @@ mod tests {
     use super::*;
 
     const EXAMPLE1: &[u32] = &[1, 4, 5, 6, 7, 10, 11, 12, 15, 16, 19];
-    const EXAMPLE2: &[u32] = &[1, 2, 3, 4, 7, 8, 9, 10, 11,14, 17, 18, 19, 20, 23, 24, 25, 28, 31, 32, 33, 34, 35, 38, 39, 42, 45, 46, 47, 48, 49];
+    const EXAMPLE2: &[u32] = &[
+        1, 2, 3, 4, 7, 8, 9, 10, 11, 14, 17, 18, 19, 20, 23, 24, 25, 28, 31, 32, 33, 34, 35, 38,
+        39, 42, 45, 46, 47, 48, 49,
+    ];
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(EXAMPLE1), 7*5);
-        assert_eq!(part1(EXAMPLE2), 22*10);
+        assert_eq!(part1(EXAMPLE1), 7 * 5);
+        assert_eq!(part1(EXAMPLE2), 22 * 10);
     }
 
     #[test]

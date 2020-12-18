@@ -24,7 +24,7 @@ const ACC: u32 = 1;
 const JMP: u32 = 2;
 
 #[derive(Debug)]
-struct Instruction (u32, i32);
+struct Instruction(u32, i32);
 
 struct Program {
     instructions: Vec<Instruction>,
@@ -45,8 +45,11 @@ impl Program {
             let Instruction(op, n) = self.instructions[pc];
 
             match op {
-                NOP => {pc += 1},
-                ACC => {acc += n; pc += 1},
+                NOP => pc += 1,
+                ACC => {
+                    acc += n;
+                    pc += 1
+                }
                 JMP => (pc = (pc as i32 + n) as usize),
                 _ => {}
             }
@@ -71,7 +74,7 @@ impl Program {
                 checkpoint = (acc, pc);
                 active = true;
 
-                op = if op == JMP {NOP} else {JMP};
+                op = if op == JMP { NOP } else { JMP };
                 seen_log.push(pc);
             } else if active {
                 seen_log.push(pc);
@@ -95,8 +98,11 @@ impl Program {
             has_seen[pc] = true;
 
             match op {
-                NOP => {pc += 1},
-                ACC => {acc += n; pc += 1},
+                NOP => pc += 1,
+                ACC => {
+                    acc += n;
+                    pc += 1
+                }
                 JMP => (pc = (pc as i32 + n) as usize),
                 _ => {}
             }
@@ -121,13 +127,11 @@ impl Program {
                 "nop" => instructions.push(Instruction(NOP, n)),
                 "acc" => instructions.push(Instruction(ACC, n)),
                 "jmp" => instructions.push(Instruction(JMP, n)),
-                _ => panic!(format!("Unknown instruction: {}", line))
+                _ => panic!(format!("Unknown instruction: {}", line)),
             }
         }
 
-        Program{
-            instructions,
-        }
+        Program { instructions }
     }
 }
 
@@ -142,7 +146,7 @@ fn parse_int(s: &str) -> i32 {
             '0'..='9' => {
                 res *= 10;
                 res += (c as i32) - ZERO;
-            },
+            }
             _ => {}
         }
     }

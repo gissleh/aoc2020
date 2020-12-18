@@ -44,7 +44,10 @@ fn part1(current: i64, shuttles: &[Shuttle]) -> i64 {
 }
 
 fn part2(shuttles: &[Shuttle]) -> i64 {
-    let prod = shuttles.iter().map(|Shuttle(id, _)| *id as i64).product::<i64>();
+    let prod = shuttles
+        .iter()
+        .map(|Shuttle(id, _)| *id as i64)
+        .product::<i64>();
     let mut sum = 0;
 
     for Shuttle(id, minutes) in shuttles.iter() {
@@ -90,12 +93,38 @@ fn parse_input(input: &[u8]) -> (i64, Vec<Shuttle>) {
 mod tests {
     use super::*;
 
-    const EXAMPLE_1: &[Shuttle] = &[Shuttle(7, 0), Shuttle(13, 1), Shuttle(59, 4), Shuttle(31, 6), Shuttle(19, 7)];
+    const EXAMPLE_1: &[Shuttle] = &[
+        Shuttle(7, 0),
+        Shuttle(13, 1),
+        Shuttle(59, 4),
+        Shuttle(31, 6),
+        Shuttle(19, 7),
+    ];
     const EXAMPLE_2: &[Shuttle] = &[Shuttle(17, 0), Shuttle(13, 2), Shuttle(19, 3)];
-    const EXAMPLE_3: &[Shuttle] = &[Shuttle(67, 0), Shuttle(7, 1), Shuttle(59, 2), Shuttle(61, 3)];
-    const EXAMPLE_4: &[Shuttle] = &[Shuttle(67, 0), Shuttle(7, 2), Shuttle(59, 3), Shuttle(61, 4)];
-    const EXAMPLE_5: &[Shuttle] = &[Shuttle(67, 0), Shuttle(7, 1), Shuttle(59, 3), Shuttle(61, 4)];
-    const EXAMPLE_6: &[Shuttle] = &[Shuttle(1789, 0), Shuttle(37, 1), Shuttle(47, 2), Shuttle(1889, 3)];
+    const EXAMPLE_3: &[Shuttle] = &[
+        Shuttle(67, 0),
+        Shuttle(7, 1),
+        Shuttle(59, 2),
+        Shuttle(61, 3),
+    ];
+    const EXAMPLE_4: &[Shuttle] = &[
+        Shuttle(67, 0),
+        Shuttle(7, 2),
+        Shuttle(59, 3),
+        Shuttle(61, 4),
+    ];
+    const EXAMPLE_5: &[Shuttle] = &[
+        Shuttle(67, 0),
+        Shuttle(7, 1),
+        Shuttle(59, 3),
+        Shuttle(61, 4),
+    ];
+    const EXAMPLE_6: &[Shuttle] = &[
+        Shuttle(1789, 0),
+        Shuttle(37, 1),
+        Shuttle(47, 2),
+        Shuttle(1889, 3),
+    ];
 
     #[test]
     fn test_part2() {

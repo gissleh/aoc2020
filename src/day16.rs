@@ -63,7 +63,10 @@ fn determine_fields(input: &Input, valid_tickets: &[usize]) -> Vec<usize> {
     let mut field_masks = vec![usize::max_value(); ticket_length];
 
     for (ticket_start, ticket_end) in valid_tickets.iter().map(|v| &input.tickets[*v]) {
-        for (i, n) in input.ticket_data[*ticket_start..*ticket_end].iter().enumerate() {
+        for (i, n) in input.ticket_data[*ticket_start..*ticket_end]
+            .iter()
+            .enumerate()
+        {
             field_masks[i] &= input.map[*n as usize]
         }
     }
@@ -90,7 +93,7 @@ fn determine_fields(input: &Input, valid_tickets: &[usize]) -> Vec<usize> {
                         rule_assigned[n] = true;
                         assigned_fields[i] = n;
                         assignment_count += 1;
-                        break
+                        break;
                     }
                 }
             }
@@ -131,13 +134,15 @@ impl<'a> Input<'a> {
                 let or_pos = line.find(" or ").unwrap();
 
                 let rule_text = &line[..colon_pos];
-                let (min1, max1) = parse_range(&line[colon_pos+2..or_pos]);
-                let (min2, max2) = parse_range(&line[or_pos+4..]);
+                let (min1, max1) = parse_range(&line[colon_pos + 2..or_pos]);
+                let (min2, max2) = parse_range(&line[or_pos + 4..]);
 
-                rules.push(Rule{
+                rules.push(Rule {
                     name: rule_text,
-                    min1, max1,
-                    min2, max2,
+                    min1,
+                    max1,
+                    min2,
+                    max2,
                 });
 
                 if max1 > highest {
@@ -181,8 +186,11 @@ impl<'a> Input<'a> {
             }
         }
 
-        Input{
-            map, rules, ticket_data, tickets,
+        Input {
+            map,
+            rules,
+            ticket_data,
+            tickets,
         }
     }
 }
@@ -192,11 +200,11 @@ fn parse_range(s: &str) -> (u64, u64) {
     let mut current = 0usize;
 
     for c in s.chars() {
-       if c == '-' {
-           current = 1;
-       } else {
-           res[current] = (res[current] * 10) + (c as u64 - U64_ZERO);
-       }
+        if c == '-' {
+            current = 1;
+        } else {
+            res[current] = (res[current] * 10) + (c as u64 - U64_ZERO);
+        }
     }
 
     (res[0], res[1])
@@ -216,7 +224,8 @@ mod tests {
     use super::*;
 
     fn test_part2() {
-        let input = Input::parse("class: 0-1 or 4-19
+        let input = Input::parse(
+            "class: 0-1 or 4-19
 row: 0-5 or 8-19
 seat: 0-13 or 16-19
 
@@ -226,7 +235,8 @@ your ticket:
 nearby tickets:
 3,9,18
 15,1,5
-5,14,9");
+5,14,9",
+        );
 
         assert_eq!(determine_fields(&input, &[1, 2, 3]), vec![1, 0, 2]);
     }

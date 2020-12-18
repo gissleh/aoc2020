@@ -1,4 +1,4 @@
-use common::aoc::{load_input, print_result, print_time, run_many, run_once, print_two_results};
+use common::aoc::{load_input, print_result, print_time, print_two_results, run_many, run_once};
 
 const A: usize = 'a' as usize;
 
@@ -35,7 +35,8 @@ fn main() {
 
     let (res_part1_inp, dur_part1_inp) = run_many(10000, || part1_inp(&input));
     let (res_part2_inp, dur_part2_inp) = run_many(10000, || part2_inp(&input));
-    let ((res_part1_inp2, res_part2_inp2), dur_parts_inp) = run_many(10000, || both_parts_inp(&input));
+    let ((res_part1_inp2, res_part2_inp2), dur_parts_inp) =
+        run_many(10000, || both_parts_inp(&input));
 
     print_result("P1 INPUT", res_part1_inp);
     print_result("P2 INPUT", res_part2_inp);
@@ -197,9 +198,10 @@ fn part2_inp(a: &str) -> u32 {
         p = c
     }
 
-    count += sets.iter().fold(134217727usize, |acc, cur| {
-        acc & *cur
-    }).count_ones();
+    count += sets
+        .iter()
+        .fold(134217727usize, |acc, cur| acc & *cur)
+        .count_ones();
 
     count
 }
@@ -242,9 +244,10 @@ fn both_parts_inp(a: &str) -> (u32, u32) {
     }
 
     count1 += group_set.count_ones();
-    count2 += sets.iter().fold(134217727usize, |acc, cur| {
-        acc & *cur
-    }).count_ones();
+    count2 += sets
+        .iter()
+        .fold(134217727usize, |acc, cur| acc & *cur)
+        .count_ones();
 
     (count1, count2)
 }
