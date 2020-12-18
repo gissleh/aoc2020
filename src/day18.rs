@@ -44,6 +44,7 @@ fn part2(input: &Input) -> i64 {
 fn solve_one(tokens: &[Token]) -> (i64, usize) {
     let mut acc = 0;
     let mut is_adding = true;
+    let mut stack: SmallVec<[(i64, bool); 4]> = SmallVec::new();
     let mut pos = 0;
     let mut skip = 0;
 
@@ -69,18 +70,18 @@ fn solve_one(tokens: &[Token]) -> (i64, usize) {
                 is_adding = false;
             }
             Token::ParaStart => {
-                let (n, new_skip) = solve_one(&tokens[pos..]);
+                stack.push((acc, is_adding));
+                acc = 0;
+                is_adding = true;
+            }
+            Token::ParaEnd => {
+                let (n, was_adding) = stack.pop().unwrap();
 
-                skip = new_skip;
-
-                if is_adding {
+                if was_adding {
                     acc += n;
                 } else {
                     acc *= n;
                 }
-            }
-            Token::ParaEnd => {
-                break;
             }
         }
     }
