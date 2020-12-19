@@ -23,8 +23,7 @@ fn part1(input: &Input) -> i64 {
     let mut sum = 0;
 
     for line in input.iter() {
-        let (res, _) = solve_one(line);
-        sum += res;
+        sum += solve_one(line);
     }
 
     sum
@@ -41,15 +40,13 @@ fn part2(input: &Input) -> i64 {
     sum
 }
 
-fn solve_one(tokens: &[Token]) -> (i64, usize) {
+fn solve_one(tokens: &[Token]) -> i64 {
     let mut acc = 0;
     let mut is_adding = true;
     let mut stack: SmallVec<[(i64, bool); 4]> = SmallVec::new();
-    let mut pos = 0;
     let mut skip = 0;
 
     for token in tokens.iter() {
-        pos += 1;
         if skip > 0 {
             skip -= 1;
             continue;
@@ -86,7 +83,7 @@ fn solve_one(tokens: &[Token]) -> (i64, usize) {
         }
     }
 
-    (acc, pos)
+    acc
 }
 
 fn solve_one_p2(tokens: &[Token]) -> (i64, usize) {
