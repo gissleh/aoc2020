@@ -21,8 +21,27 @@ where
         *self.data.get(y * self.width + x).unwrap()
     }
 
+    pub fn get_safe(&self, x: usize, y: usize) -> Option<T> {
+        if x > self.width {
+            None
+        } else if y > self.height {
+            None
+        } else {
+            self.data.get(y * self.width + x).map(|v| *v)
+        }
+    }
+
+    pub fn data(&self) -> &[T] {
+        return &self.data;
+    }
+
     pub fn set(&mut self, x: usize, y: usize, v: T) {
         self.data[y * self.width + x] = v;
+    }
+
+    pub fn set_slice(&mut self, x: usize, y: usize, src: &[T]) {
+        let index = (y * self.width + x);
+        self.data[index..index+src.len()].copy_from_slice(src);
     }
 
     pub fn new(width: usize, height: usize, def: T) -> FixedGrid<T> {
