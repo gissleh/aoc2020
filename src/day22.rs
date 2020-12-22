@@ -24,6 +24,7 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 
     assert_eq!(res_part1, 33400);
+    assert_eq!(res_part2, 33745);
 }
 
 fn part1(deck_1: &[u8], deck_2: &[u8]) -> u32 {
@@ -97,7 +98,7 @@ fn part2_recurse(mut deck_1: VecDeque<u8>, mut deck_2: VecDeque<u8>, mut cache: 
             let sub_winner = if let Some(result) = cache.get(&print) {
                 *result
             } else {
-                let (_, sub_winner) = part2_recurse(sub_deck_1, sub_deck_2, &mut cache);
+                let sub_winner = part2_recurse_inner(sub_deck_1, sub_deck_2, &mut cache);
                 cache.insert(print, sub_winner);
                 sub_winner
             };
@@ -135,6 +136,31 @@ fn part2_recurse(mut deck_1: VecDeque<u8>, mut deck_2: VecDeque<u8>, mut cache: 
         winner.iter().enumerate().map(|(i, c)| (l - i) as u32 * *c as u32).sum(),
         winner_player,
     )
+}
+
+fn part2_recurse_inner(deck_1: VecDeque<u8>, deck_2: VecDeque<u8>, mut cache: &mut HashMap<SmallVec<[u8; 64]>, u32, BuildHasherDefault<FxHasher>>) -> u32 {
+    let mut highest = 0;
+    let mut highest_player = 1;
+
+    for n in deck_1.iter() {
+        if *n > highest {
+            highest_player = 1;
+            highest = *n;
+        }
+    }
+    for n in deck_2.iter() {
+        if *n > highest {
+            highest_player = 2;
+            highest = *n;
+        }
+    }
+
+    if highest_player == 1 {
+        highest_player
+    } else {
+        let (_, highest_player) = part2_recurse(deck_1, deck_2, &mut cache);
+        highest_player
+    }
 }
 
 fn deck_fingerprint(deck_1: &VecDeque<u8>, deck_2: &VecDeque<u8>) -> SmallVec<[u8; 64]> {
