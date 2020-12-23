@@ -41,7 +41,7 @@ where
 
     pub fn set_slice(&mut self, x: usize, y: usize, src: &[T]) {
         let index = y * self.width + x;
-        self.data[index..index+src.len()].copy_from_slice(src);
+        self.data[index..index + src.len()].copy_from_slice(src);
     }
 
     pub fn new(width: usize, height: usize, def: T) -> FixedGrid<T> {

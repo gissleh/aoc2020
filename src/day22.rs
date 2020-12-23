@@ -1,8 +1,8 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
-use smallvec::SmallVec;
-use common::parsers::{parse_u8};
+use common::parsers::parse_u8;
+use rustc_hash::{FxHashMap, FxHashSet, FxHasher};
 use smallvec::alloc::collections::VecDeque;
-use rustc_hash::{FxHashSet, FxHashMap, FxHasher};
+use smallvec::SmallVec;
 use std::collections::HashMap;
 use std::hash::BuildHasherDefault;
 
@@ -44,14 +44,14 @@ fn part1(deck_1: &[u8], deck_2: &[u8]) -> u32 {
         }
     }
 
-    let winner = if deck_1.is_empty() {
-        deck_2
-    } else {
-        deck_1
-    };
+    let winner = if deck_1.is_empty() { deck_2 } else { deck_1 };
 
     let l = winner.len();
-    winner.iter().enumerate().map(|(i, c)| (l - i) as u32 * *c as u32).sum()
+    winner
+        .iter()
+        .enumerate()
+        .map(|(i, c)| (l - i) as u32 * *c as u32)
+        .sum()
 }
 
 fn part2(deck_1: &[u8], deck_2: &[u8]) -> u32 {
@@ -66,7 +66,11 @@ fn part2(deck_1: &[u8], deck_2: &[u8]) -> u32 {
     score
 }
 
-fn part2_recurse(mut deck_1: VecDeque<u8>, mut deck_2: VecDeque<u8>, mut cache: &mut HashMap<SmallVec<[u8; 64]>, u32, BuildHasherDefault<FxHasher>>) -> (u32, u32) {
+fn part2_recurse(
+    mut deck_1: VecDeque<u8>,
+    mut deck_2: VecDeque<u8>,
+    mut cache: &mut HashMap<SmallVec<[u8; 64]>, u32, BuildHasherDefault<FxHasher>>,
+) -> (u32, u32) {
     let mut set = FxHashSet::default();
     let mut override_winner = false;
 
@@ -133,12 +137,20 @@ fn part2_recurse(mut deck_1: VecDeque<u8>, mut deck_2: VecDeque<u8>, mut cache: 
     let l = winner.len();
 
     (
-        winner.iter().enumerate().map(|(i, c)| (l - i) as u32 * *c as u32).sum(),
+        winner
+            .iter()
+            .enumerate()
+            .map(|(i, c)| (l - i) as u32 * *c as u32)
+            .sum(),
         winner_player,
     )
 }
 
-fn part2_recurse_inner(deck_1: VecDeque<u8>, deck_2: VecDeque<u8>, mut cache: &mut HashMap<SmallVec<[u8; 64]>, u32, BuildHasherDefault<FxHasher>>) -> u32 {
+fn part2_recurse_inner(
+    deck_1: VecDeque<u8>,
+    deck_2: VecDeque<u8>,
+    mut cache: &mut HashMap<SmallVec<[u8; 64]>, u32, BuildHasherDefault<FxHasher>>,
+) -> u32 {
     let mut highest = 0;
     let mut highest_player = 1;
 
@@ -230,7 +242,6 @@ Player 2:
 
         assert_eq!(part1(&deck_1, &deck_2), 306);
     }
-
 
     #[test]
     fn test_part2() {

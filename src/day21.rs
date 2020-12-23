@@ -21,7 +21,10 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 
     assert_eq!(res_part1, 2436);
-    assert_eq!(res_part2.as_str(), "dhfng,pgblcd,xhkdc,ghlzj,dstct,nqbnmzx,ntggc,znrzgs")
+    assert_eq!(
+        res_part2.as_str(),
+        "dhfng,pgblcd,xhkdc,ghlzj,dstct,nqbnmzx,ntggc,znrzgs"
+    )
 }
 
 fn part1(input: &Input) -> (u64, Vec<usize>) {
@@ -65,7 +68,6 @@ fn part2(input: &Input, inerts: &[usize]) -> String {
 
         prev_inert = inert;
     }
-
 
     // Identify allergens
     let mut bad_ingredients = vec![0; not_inerts.len()];
@@ -130,12 +132,12 @@ struct Input<'a> {
     allergens: Vec<&'a str>,
     ingredients: Vec<&'a str>,
     allergen_order: Vec<usize>,
-    foods: Vec<Food>
+    foods: Vec<Food>,
 }
 
 impl<'a> Input<'a> {
     fn parse(input_str: &'a str) -> Input {
-        let mut input = Input{
+        let mut input = Input {
             allergens: Vec::with_capacity(64),
             ingredients: Vec::with_capacity(256),
             allergen_order: Vec::new(),
@@ -152,7 +154,9 @@ impl<'a> Input<'a> {
 
                 let mut ingredients = SmallVec::new();
                 for ingredient in line[..para_pos - 1].split(' ') {
-                    let ingredient_index = if let Some(index) = input.ingredients.iter().position(|p| *p == ingredient) {
+                    let ingredient_index = if let Some(index) =
+                        input.ingredients.iter().position(|p| *p == ingredient)
+                    {
                         index
                     } else {
                         input.ingredients.push(ingredient);
@@ -165,21 +169,27 @@ impl<'a> Input<'a> {
                 let mut allergen_mask = 0u64;
                 for allergen in line[para_pos + 10..line.len() - 1].split(' ') {
                     let allergen = allergen.trim_end_matches(',');
-                    let allergen_index = if let Some(index) = input.allergens.iter().position(|p| *p == allergen) {
-                        index
-                    } else {
-                        input.allergens.push(allergen);
-                        input.allergens.len() - 1
-                    };
+                    let allergen_index =
+                        if let Some(index) = input.allergens.iter().position(|p| *p == allergen) {
+                            index
+                        } else {
+                            input.allergens.push(allergen);
+                            input.allergens.len() - 1
+                        };
 
                     allergen_mask |= 1 << allergen_index;
                 }
 
-                input.foods.push(Food{ingredients, allergen_mask});
+                input.foods.push(Food {
+                    ingredients,
+                    allergen_mask,
+                });
             } else {
                 let mut ingredients = SmallVec::new();
                 for ingredient in line.split(' ') {
-                    let ingredient_index = if let Some(index) = input.ingredients.iter().position(|p| *p == ingredient) {
+                    let ingredient_index = if let Some(index) =
+                        input.ingredients.iter().position(|p| *p == ingredient)
+                    {
                         index
                     } else {
                         input.ingredients.push(ingredient);
@@ -189,14 +199,15 @@ impl<'a> Input<'a> {
                     ingredients.push(ingredient_index);
                 }
 
-                input.foods.push(Food{ingredients, allergen_mask: 0});
+                input.foods.push(Food {
+                    ingredients,
+                    allergen_mask: 0,
+                });
             }
         }
 
         let mut allergen_order: Vec<usize> = (0..input.allergens.len()).collect();
-        allergen_order.sort_by(|a, b| {
-            input.allergens[*a].cmp(input.allergens[*b])
-        });
+        allergen_order.sort_by(|a, b| input.allergens[*a].cmp(input.allergens[*b]));
 
         input.allergen_order = allergen_order;
 
@@ -211,7 +222,10 @@ struct Food {
 
 impl Food {
     fn contains_ingredient(&self, ingredient_index: usize) -> bool {
-        self.ingredients.iter().find(|i| **i == ingredient_index).is_some()
+        self.ingredients
+            .iter()
+            .find(|i| **i == ingredient_index)
+            .is_some()
     }
 }
 

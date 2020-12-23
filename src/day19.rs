@@ -2,8 +2,8 @@
 extern crate smallvec;
 
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
-use smallvec::SmallVec;
 use common::parsers::parse_usize;
+use smallvec::SmallVec;
 
 fn main() {
     let (input, dur_load) = run_once(|| load_input("day19"));
@@ -34,7 +34,11 @@ fn part2(input: &Input) -> u32 {
 fn parts_common(input: &Input, is_part2: bool) -> u32 {
     let mut count = 0;
 
-    let rules = if is_part2 { &input.rules_p2 } else { &input.rules };
+    let rules = if is_part2 {
+        &input.rules_p2
+    } else {
+        &input.rules
+    };
 
     for line in input.lines() {
         if check_line(line, rules) {
@@ -46,13 +50,12 @@ fn parts_common(input: &Input, is_part2: bool) -> u32 {
 }
 
 fn check_line(line: &[u8], rules: &[Rule]) -> bool {
-    let mut stack: SmallVec<[(usize, usize, usize, bool); 64]> = smallvec![
-        (0, 0, 0, false),
-    ];
+    let mut stack: SmallVec<[(usize, usize, usize, bool); 64]> = smallvec![(0, 0, 0, false),];
     let mut line_pos = 0;
     let mut pass = true;
 
-    #[cfg(test)] {
+    #[cfg(test)]
+    {
         //println!("Line: {}", String::from_utf8(Vec::from(line)).unwrap());
     }
 
@@ -60,10 +63,21 @@ fn check_line(line: &[u8], rules: &[Rule]) -> bool {
         let (rule_index, pos, old_line_pos, right) = stack.pop().unwrap();
         let rule = &rules[rule_index];
 
-        #[cfg(test)] {
+        #[cfg(test)]
+        {
             let d = b'E';
             if stack.len() < 8 {
-                println!("{}{} :: {:?} {} {} {}({}) {}", "  ".repeat(stack.len()), rule_index, rule, pos, right, line_pos, *line.get(line_pos).unwrap_or(&d) as char, pass);
+                println!(
+                    "{}{} :: {:?} {} {} {}({}) {}",
+                    "  ".repeat(stack.len()),
+                    rule_index,
+                    rule,
+                    pos,
+                    right,
+                    line_pos,
+                    *line.get(line_pos).unwrap_or(&d) as char,
+                    pass
+                );
             } else if stack.len() == 8 {
                 println!("                ...");
             }
@@ -115,12 +129,14 @@ fn check_line(line: &[u8], rules: &[Rule]) -> bool {
     }
 
     if pass && line_pos == line.len() {
-        #[cfg(test)] {
+        #[cfg(test)]
+        {
             println!("PASS Line: {}", String::from_utf8(Vec::from(line)).unwrap());
         };
         true
     } else {
-        #[cfg(test)] {
+        #[cfg(test)]
+        {
             println!("FAIL Line: {}", String::from_utf8(Vec::from(line)).unwrap());
         };
         false
@@ -137,7 +153,7 @@ struct Input {
 }
 
 impl Input {
-    fn lines(&self) -> impl Iterator<Item=&[u8]> {
+    fn lines(&self) -> impl Iterator<Item = &[u8]> {
         self.slices.iter().map(move |(s, e)| &self.data[*s..*e])
     }
 
@@ -176,12 +192,21 @@ impl Input {
                     rules[rule_index] = Rule::Character(bytes[quote_pos + 1]);
                 } else if let Some(or_pos) = or_pos {
                     rules[rule_index] = Rule::Disjunction(
-                        line[colon_pos + 2..or_pos - 1].split(' ').map(|t| parse_usize(t)).collect(),
-                        line[or_pos + 2..].split(' ').map(|t| parse_usize(t)).collect(),
+                        line[colon_pos + 2..or_pos - 1]
+                            .split(' ')
+                            .map(|t| parse_usize(t))
+                            .collect(),
+                        line[or_pos + 2..]
+                            .split(' ')
+                            .map(|t| parse_usize(t))
+                            .collect(),
                     );
                 } else {
                     rules[rule_index] = Rule::SubRules(
-                        line[colon_pos + 2..].split(' ').map(|t| parse_usize(t)).collect()
+                        line[colon_pos + 2..]
+                            .split(' ')
+                            .map(|t| parse_usize(t))
+                            .collect(),
                     );
 
                     sub_indexes.push(sub_indexes.len());
@@ -205,9 +230,7 @@ impl Input {
         rules_p2[8] = Rule::Disjunction(true, r8_left, r8_right);
         rules_p2[11] = Rule::Disjunction(true, r11_left, r11_right); */
 
-        rules_p2[0] = Rule::SubRules(
-            smallvec![rules_p2.len()],
-        );
+        rules_p2[0] = Rule::SubRules(smallvec![rules_p2.len()]);
 
         for a in 0..6 {
             for b in 0..6 {
@@ -225,21 +248,13 @@ impl Input {
                 }
                 hax.push(31);
 
-                rules_p2.push(
-                    Rule::Disjunction(
-                        hax,
-                        smallvec![rules_p2.len() + 1],
-                    )
-                );
+                rules_p2.push(Rule::Disjunction(hax, smallvec![rules_p2.len() + 1]));
             }
         }
 
-        rules_p2.push(Rule::Disjunction(
-            smallvec![42],
-            smallvec![42, 31],
-        ));
+        rules_p2.push(Rule::Disjunction(smallvec![42], smallvec![42, 31]));
 
-        Input{
+        Input {
             rules,
             rules_p2,
             sub_indexes,

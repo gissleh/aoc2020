@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate smallvec;
 
-use common::aoc::{print_result, print_time, run_many, run_once, load_input_bytes};
+use common::aoc::{load_input_bytes, print_result, print_time, run_many, run_once};
 use smallvec::SmallVec;
 
 fn main() {
@@ -37,7 +37,8 @@ fn part1(game: &CupsGame) -> usize {
 fn part2(game: &CupsGame) -> usize {
     let mut game = game.expanded();
 
-    #[cfg(test)] {
+    #[cfg(test)]
+    {
         println!("{:?}", game);
     }
     for _ in 0..10_000_000 {
@@ -47,7 +48,8 @@ fn part2(game: &CupsGame) -> usize {
     let a = game.nexts[1];
     let b = game.nexts[a];
 
-    #[cfg(test)] {
+    #[cfg(test)]
+    {
         println!("{}", a);
         println!("{}", b);
     }
@@ -66,14 +68,18 @@ struct CupsGame {
 
 impl CupsGame {
     fn expanded(&self) -> CupsGame {
-        let mut new_game = CupsGame{
+        let mut new_game = CupsGame {
             current: self.current,
             nexts: SmallVec::with_capacity(1000001),
             max: 1000000,
         };
 
         new_game.nexts.extend_from_slice(&self.nexts);
-        let old_last = new_game.nexts.iter().position(|n| *n == self.current).unwrap();
+        let old_last = new_game
+            .nexts
+            .iter()
+            .position(|n| *n == self.current)
+            .unwrap();
         new_game.nexts[old_last] = 10;
         while new_game.nexts.len() < 1000000 {
             new_game.nexts.push(new_game.nexts.len() + 1);
@@ -94,7 +100,11 @@ impl CupsGame {
         self.nexts[c] = a;
 
         // Find current.
-        let mut destination = if self.current > 1 { self.current - 1 } else { self.max };
+        let mut destination = if self.current > 1 {
+            self.current - 1
+        } else {
+            self.max
+        };
         while a == destination || b == destination || c == destination {
             destination -= 1;
             if destination == 0 {
@@ -152,7 +162,11 @@ impl CupsGame {
             current = next;
         }
 
-        CupsGame{ current: start, max: 9, nexts }
+        CupsGame {
+            current: start,
+            max: 9,
+            nexts,
+        }
     }
 }
 
@@ -167,6 +181,9 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&CupsGame::parse("389125467\n".as_bytes())), 149245887792);
+        assert_eq!(
+            part2(&CupsGame::parse("389125467\n".as_bytes())),
+            149245887792
+        );
     }
 }
