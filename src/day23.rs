@@ -22,6 +22,7 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 
     assert_eq!(res_part1, 69425837);
+    assert_eq!(res_part2, 218882971435);
 }
 
 fn part1(game: &CupsGame) -> usize {
@@ -52,9 +53,8 @@ fn part2(game: &CupsGame) -> usize {
     {
         println!("{}", a);
         println!("{}", b);
+        assert_eq!(game.count(1), 1000000);
     }
-
-    assert_eq!(game.count(1), 1000000);
 
     a * b
 }
@@ -130,6 +130,7 @@ impl CupsGame {
         sum
     }
 
+    #[allow(dead_code)]
     fn count(&self, from: usize) -> usize {
         let mut count = 1;
         let mut current = self.nexts[from];
