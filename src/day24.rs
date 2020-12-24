@@ -1,8 +1,7 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
 use smallvec::SmallVec;
 use std::ops::{Add, AddAssign};
-use rustc_hash::{FxHashSet, FxHashMap};
-use term::Error::ColorOutOfRange;
+use common::grid::FixedGrid;
 
 const W: Coordinate = Coordinate(-1, 0);
 const SW: Coordinate = Coordinate(-1, 1);
@@ -11,7 +10,14 @@ const E: Coordinate = Coordinate(1, 0);
 const NW: Coordinate = Coordinate(0, -1);
 const NE: Coordinate = Coordinate(1, -1);
 
-const NEIGHBOR_OFFSETS: [Coordinate; 6] = [W, SW, SE, E, NW, NE];
+const NEIGHBOR_OFFSETS: [(usize, usize); 6] = [
+    (W.0 as usize, W.1 as usize),
+    (SW.0 as usize, SW.1 as usize),
+    (SE.0 as usize, SE.1 as usize),
+    (E.0 as usize, E.1 as usize),
+    (NW.0 as usize, NW.1 as usize),
+    (NE.0 as usize, NE.1 as usize),
+];
 
 fn main() {
     let (input, dur_load) = run_once(|| load_input("day24"));
@@ -20,7 +26,7 @@ fn main() {
 
     let ((list, max_len), dur_parse) = run_many(1000, || parse_input(&input));
     let ((res_part1, coords), dur_part1) = run_many(1000, || part1(&list, max_len));
-    let (res_part2, dur_part2) = run_many(1, || part2(&coords, max_len));
+    let (res_part2, dur_part2) = run_many(100, || part2(&coords, max_len));
 
     print_result("P1", res_part1);
     print_result("P2", res_part2);
@@ -45,12 +51,11 @@ fn part1(list: &[SmallVec<[Coordinate; 64]>], max_len: usize) -> (usize, Vec<Coo
         *v = !*v;
     }
 
-    let center = center as usize;
     let mut res = Vec::with_capacity(512);
     for (y, row) in grid.iter().enumerate() {
         for (x, col) in row.iter().enumerate() {
             if *col {
-                res.push(Coordinate((x - center) as i32, (y - center) as i32))
+                res.push(Coordinate((x+100) as i32, (y+100) as i32))
             }
         }
     }
@@ -58,71 +63,68 @@ fn part1(list: &[SmallVec<[Coordinate; 64]>], max_len: usize) -> (usize, Vec<Coo
     (res.len(), res.into_iter().collect())
 }
 
-fn part2(coords: &[Coordinate], _max_len: usize) -> usize {
-    let mut tile_states = FxHashMap::default();
+fn part2(coords: &[Coordinate], max_len: usize) -> usize {
+    let mut grid = FixedGrid::new((max_len + 100) * 2, (max_len + 100) * 2, false);
     let mut changes = Vec::with_capacity(128);
-    let mut new_whites = Vec::with_capacity(128);
-    for coord in coords.iter() {
-        tile_states.insert(*coord, true);
+    let mut fx = grid.width() / 2;
+    let mut fy = grid.height() / 2;
+    let mut tx = fx;
+    let mut ty = fy;
+
+    for Coordinate(x, y) in coords.iter() {
+        let x = *x as usize;
+        let y = *y as usize;
+        if x <= fx {
+            fx = x - 1;
+        } else if x >= tx {
+            tx = x + 1;
+        }
+        if y <= fy {
+            fy = y - 1;
+        } else if y >= ty {
+            ty = y + 1;
+        }
+
+        grid.set(x, y, true);
     }
 
     for _ in 0..100 {
         changes.clear();
-        new_whites.clear();
+
+        fx -= 1;
+        fy -= 1;
+        tx += 1;
+        ty += 1;
 
         // Flip black tiles and find new whites.
-        for (coord, is_black) in tile_states.iter() {
+        for (x, y, is_black) in grid.limited_iter(fx, fy, tx, ty) {
+            let mut count = 0;
+            for (offset_x, offset_y) in NEIGHBOR_OFFSETS.iter() {
+                if grid.get(x+offset_x, y+offset_y) {
+                    count += 1;
+                    if count > 2 {
+                        break;
+                    }
+                }
+            }
+
             if *is_black {
-                let mut count = 0;
-                for offset in NEIGHBOR_OFFSETS.iter() {
-                    let neigh = *coord + *offset;
-                    if let Some(other_is_black) = tile_states.get(&neigh) {
-                        if *other_is_black {
-                            count += 1;
-                        }
-                    } else {
-                        new_whites.push(neigh);
-                    }
-                }
-
                 if count != 1 && count != 2 {
-                    changes.push((*coord, false));
+                    changes.push(((x, y), false));
                 }
-            }
-        }
-        for coord in new_whites.iter() {
-            tile_states.insert(*coord, false);
-        }
-
-        // Flip white tiles.
-        for (coord, is_black) in tile_states.iter() {
-            if !*is_black {
-                let mut count = 0;
-                for offset in NEIGHBOR_OFFSETS.iter() {
-                    let neigh = *coord + *offset;
-
-                    if let Some(other_is_black) = tile_states.get(&neigh) {
-                        if *other_is_black {
-                            count += 1;
-                            if count > 2 {
-                                break;
-                            }
-                        }
-                    }
-                }
-
+            } else {
                 if count == 2 {
-                    changes.push((*coord, true));
+                    changes.push(((x, y), true));
                 }
             }
         }
 
-        for (coord, value) in changes.iter() {
-            *tile_states.get_mut(coord).unwrap() = *value;
+        for ((x, y), value) in changes.iter() {
+            grid.set(*x, *y, *value);
         }
     }
 
-    tile_states.iter().filter(|(_, v)| **v).count()
+    grid.data().iter().filter(|v| **v).count()
 }
 
 fn parse_input(input: &str) -> (Vec<SmallVec<[Coordinate; 64]>>, usize) {
