@@ -2,12 +2,13 @@ use common::aoc::{load_input, print_result, print_time, run_many, run_once};
 use smallvec::SmallVec;
 use std::ops::{Add, AddAssign};
 use rustc_hash::{FxHashSet, FxHashMap};
+use term::Error::ColorOutOfRange;
 
-const W: Coordinate = Coordinate(-2, 0);
+const W: Coordinate = Coordinate(-1, 0);
 const SW: Coordinate = Coordinate(-1, 1);
-const SE: Coordinate = Coordinate(1, 1);
-const E: Coordinate = Coordinate(2, 0);
-const NW: Coordinate = Coordinate(-1, -1);
+const SE: Coordinate = Coordinate(0, 1);
+const E: Coordinate = Coordinate(1, 0);
+const NW: Coordinate = Coordinate(0, -1);
 const NE: Coordinate = Coordinate(1, -1);
 
 const NEIGHBOR_OFFSETS: [Coordinate; 6] = [W, SW, SE, E, NW, NE];
@@ -17,9 +18,9 @@ fn main() {
 
     print_time("Load", dur_load);
 
-    let (list, dur_parse) = run_many(1000, || parse_input(&input));
-    let ((res_part1, coords), dur_part1) = run_many(1000, || part1(&list));
-    let (res_part2, dur_part2) = run_many(1, || part2(&coords));
+    let ((list, max_len), dur_parse) = run_many(1000, || parse_input(&input));
+    let ((res_part1, coords), dur_part1) = run_many(1000, || part1(&list, max_len));
+    let (res_part2, dur_part2) = run_many(1, || part2(&coords, max_len));
 
     print_result("P1", res_part1);
     print_result("P2", res_part2);
@@ -30,23 +31,34 @@ fn main() {
     print_time("Total", dur_parse + dur_part1 + dur_part2);
 }
 
-fn part1(list: &[SmallVec<[Coordinate; 64]>]) -> (usize, Vec<Coordinate>) {
-    let mut res = FxHashSet::default();
+fn part1(list: &[SmallVec<[Coordinate; 64]>], max_len: usize) -> (usize, Vec<Coordinate>) {
+    let mut grid = vec![vec![false; max_len*2]; max_len*2];
+    let center = max_len as i32;
 
     for item in list.iter() {
-        let path_end = item.iter().fold(Coordinate(0, 0), |acc, x| acc + *x);
+        let Coordinate(x, y) = item.iter().fold(Coordinate(0, 0), |acc, x| acc + *x);
 
-        if res.contains(&path_end) {
-            res.remove(&path_end);
-        } else {
-            res.insert(path_end);
+        let x = (x + center) as usize;
+        let y = (y + center) as usize;
+
+        let v = &mut grid[y][x];
+        *v = !*v;
+    }
+
+    let center = center as usize;
+    let mut res = Vec::with_capacity(512);
+    for (y, row) in grid.iter().enumerate() {
+        for (x, col) in row.iter().enumerate() {
+            if *col {
+                res.push(Coordinate((x - center) as i32, (y - center) as i32))
+            }
         }
     }
 
     (res.len(), res.into_iter().collect())
 }
 
-fn part2(coords: &[Coordinate]) -> usize {
+fn part2(coords: &[Coordinate], _max_len: usize) -> usize {
     let mut tile_states = FxHashMap::default();
     let mut changes = Vec::with_capacity(128);
     let mut new_whites = Vec::with_capacity(128);
@@ -113,8 +125,11 @@ fn part2(coords: &[Coordinate]) -> usize {
     tile_states.iter().filter(|(_, v)| **v).count()
 }
 
-fn parse_input(input: &str) -> Vec<SmallVec<[Coordinate; 64]>> {
-    input.lines().filter(|l| l.len() > 0).map(parse_line).collect()
+fn parse_input(input: &str) -> (Vec<SmallVec<[Coordinate; 64]>>, usize) {
+    let res: Vec<SmallVec<[Coordinate; 64]>> = input.lines().filter(|l| l.len() > 0).map(parse_line).collect();
+    let max_len = res.iter().map(|v| v.len()).max().unwrap();
+
+    (res, max_len)
 }
 
 fn parse_line(line: &str) -> SmallVec<[Coordinate; 64]> {
