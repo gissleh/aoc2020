@@ -30,9 +30,11 @@ fn main() {
 }
 
 fn part1(card_public_key: u64, door_public_key: u64) -> u64 {
-    let card_loop_size = find_loop_size(card_public_key);
-
-    transform_key(door_public_key, card_loop_size)
+    if card_public_key < door_public_key {
+        transform_key(door_public_key, find_loop_size(card_public_key))
+    } else {
+        transform_key(card_public_key, find_loop_size(door_public_key))
+    }
 }
 
 fn find_loop_size(public_key: u64) -> u64 {
