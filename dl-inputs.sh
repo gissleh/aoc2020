@@ -8,9 +8,7 @@ CURL="curl -H 'authority: adventofcode.com' -H 'dnt: 1' -H 'user-agent: Mozilla/
 
 mkdir -p input
 
-CURRENT_DAY=$(date +"%e")
-
-for i in $(seq -f "%02g" 1 $CURRENT_DAY)
+for i in $(seq -f "%02g" 1 25)
 do
   i_nopad=${i##+(0)}
 
@@ -19,3 +17,7 @@ do
     echo $CURL "https://adventofcode.com/2020/day/$i_nopad/input" -o "./input/day$i.txt" | bash
   fi
 done
+
+./dl-old-inputs.sh 2017 21
+./dl-old-inputs.sh 2017 23
+./dl-old-inputs.sh 2017 24
