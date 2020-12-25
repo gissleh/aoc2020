@@ -12,22 +12,27 @@ fn main() {
 
     let ((card_public_key, door_public_key), dur_parse) = run_many(1000, || parse_input(&input));
     let (res_part1, dur_part1) = run_many(100, || part1(card_public_key, door_public_key));
+    let (res_part1_a, dur_part1_a) = run_many(100, || part1(8335663, 8614349));
+    let (res_part1_t, dur_part1_t) = run_many(100, || part1(14788856, 19316454));
 
     println!("Input (Card): {}", card_public_key);
     println!("Input (Door): {}", door_public_key);
 
-    print_result("P1", res_part1);
+    print_result("P1 (Input)", res_part1);
+    print_result("8335663, 8614349)", res_part1_a);
+    print_result("14788856, 19316454", res_part1_t);
 
     print_time("Parse", dur_parse);
-    print_time("P1", dur_part1);
+    print_time("P1 (Input)", dur_part1);
     print_time("Total", dur_parse + dur_part1);
+    print_time("P1 (8335663, 8614349)", dur_part1_a);
+    print_time("P1 (14788856, 19316454)", dur_part1_t);
 }
 
 fn part1(card_public_key: u64, door_public_key: u64) -> u64 {
     let card_loop_size = find_loop_size(card_public_key);
-    let encryption_key = transform_key(door_public_key, card_loop_size);
 
-    encryption_key
+    transform_key(door_public_key, card_loop_size)
 }
 
 fn find_loop_size(public_key: u64) -> u64 {
