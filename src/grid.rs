@@ -48,7 +48,7 @@ where
         self.data[index..index + src.len()].copy_from_slice(src);
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=(usize, usize, &T)> {
+    pub fn iter(&self) -> impl Iterator<Item = (usize, usize, &T)> {
         let mut y = 0usize;
         let mut x = 0usize;
 
@@ -66,7 +66,13 @@ where
         })
     }
 
-    pub fn limited_iter(&self, fx: usize, fy: usize, tx: usize, ty: usize) -> impl Iterator<Item=(usize, usize, &T)> {
+    pub fn limited_iter(
+        &self,
+        fx: usize,
+        fy: usize,
+        tx: usize,
+        ty: usize,
+    ) -> impl Iterator<Item = (usize, usize, &T)> {
         let w = tx - fx;
         let h = ty - fy;
         let first = (fy * self.width) + fx;
@@ -76,12 +82,16 @@ where
         assert!(tx <= self.width);
         assert!(ty <= self.height);
 
-        (0..(w*h)).map(move |i| {
+        (0..(w * h)).map(move |i| {
             let rx = i % w;
             let ry = i / w;
 
             unsafe {
-                (fx + rx, fy + ry, self.data.get_unchecked(first + (ry * self.width) + rx))
+                (
+                    fx + rx,
+                    fy + ry,
+                    self.data.get_unchecked(first + (ry * self.width) + rx),
+                )
             }
         })
     }

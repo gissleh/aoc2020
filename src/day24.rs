@@ -1,7 +1,7 @@
 use common::aoc::{load_input, print_result, print_time, run_many, run_once};
+use common::grid::FixedGrid;
 use smallvec::SmallVec;
 use std::ops::{Add, AddAssign};
-use common::grid::FixedGrid;
 
 const W: Coordinate = Coordinate(-1, 0);
 const SW: Coordinate = Coordinate(-1, 1);
@@ -38,7 +38,7 @@ fn main() {
 }
 
 fn part1(list: &[SmallVec<[Coordinate; 64]>], max_len: usize) -> (usize, Vec<Coordinate>) {
-    let mut grid = vec![vec![false; max_len*2]; max_len*2];
+    let mut grid = vec![vec![false; max_len * 2]; max_len * 2];
     let center = max_len as i32;
 
     for item in list.iter() {
@@ -55,7 +55,7 @@ fn part1(list: &[SmallVec<[Coordinate; 64]>], max_len: usize) -> (usize, Vec<Coo
     for (y, row) in grid.iter().enumerate() {
         for (x, col) in row.iter().enumerate() {
             if *col {
-                res.push(Coordinate((x+100) as i32, (y+100) as i32))
+                res.push(Coordinate((x + 100) as i32, (y + 100) as i32))
             }
         }
     }
@@ -100,7 +100,7 @@ fn part2(coords: &[Coordinate], max_len: usize) -> usize {
         for (x, y, is_black) in grid.limited_iter(fx, fy, tx, ty) {
             let mut count = 0;
             for (offset_x, offset_y) in NEIGHBOR_OFFSETS.iter() {
-                if grid.get(x+offset_x, y+offset_y) {
+                if grid.get(x + offset_x, y + offset_y) {
                     count += 1;
                     if count > 2 {
                         break;
@@ -128,7 +128,11 @@ fn part2(coords: &[Coordinate], max_len: usize) -> usize {
 }
 
 fn parse_input(input: &str) -> (Vec<SmallVec<[Coordinate; 64]>>, usize) {
-    let res: Vec<SmallVec<[Coordinate; 64]>> = input.lines().filter(|l| l.len() > 0).map(parse_line).collect();
+    let res: Vec<SmallVec<[Coordinate; 64]>> = input
+        .lines()
+        .filter(|l| l.len() > 0)
+        .map(parse_line)
+        .collect();
     let max_len = res.iter().map(|v| v.len()).max().unwrap();
 
     (res, max_len)
@@ -147,14 +151,14 @@ fn parse_line(line: &str) -> SmallVec<[Coordinate; 64]> {
                     0u8 => res.push(W),
                     b's' => res.push(SW),
                     b'n' => res.push(NW),
-                    _ => panic!("Bad stuff")
+                    _ => panic!("Bad stuff"),
                 }
             } else {
                 match modifier {
                     0u8 => res.push(E),
                     b's' => res.push(SE),
                     b'n' => res.push(NE),
-                    _ => panic!("Bad stuff")
+                    _ => panic!("Bad stuff"),
                 }
             }
 
