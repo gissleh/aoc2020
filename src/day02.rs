@@ -83,7 +83,6 @@ fn parse_input(input: &str) -> Vec<(u32, u32, u8, &str)> {
             }
         }
 
-
         list.push((min, max, pwd_char, password));
     }
 

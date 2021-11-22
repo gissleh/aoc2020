@@ -65,10 +65,7 @@ impl RuleSet {
             count += bag_count;
 
             for BagLink(index, child_bag_count) in bag.can_contain.iter() {
-                stack.push((
-                    self.bags.get(*index).unwrap(),
-                    bag_count * child_bag_count,
-                ));
+                stack.push((self.bags.get(*index).unwrap(), bag_count * child_bag_count));
             }
         }
 
@@ -84,7 +81,7 @@ impl RuleSet {
             Some(index) => *index,
             None => {
                 let index = self.bags.len();
-                let bag = Bag{
+                let bag = Bag {
                     index,
                     can_contain: Vec::with_capacity(4),
                     contained_by: Vec::with_capacity(8),
@@ -99,7 +96,7 @@ impl RuleSet {
     }
 
     pub fn parse(input: &str) -> RuleSet {
-        let mut rule_set = RuleSet{
+        let mut rule_set = RuleSet {
             map: BTreeMap::new(),
             bags: Vec::with_capacity(256),
         };
@@ -119,7 +116,9 @@ impl RuleSet {
                 let child_bag_color = &part[3..child_bag_color_index];
                 let child_bag_index = rule_set.ensure_bag_index(child_bag_color);
 
-                rule_set.bags[bag_index].can_contain.push(BagLink(child_bag_index, count));
+                rule_set.bags[bag_index]
+                    .can_contain
+                    .push(BagLink(child_bag_index, count));
                 rule_set.bags[child_bag_index].contained_by.push(bag_index);
             }
         }
@@ -136,7 +135,7 @@ struct Bag {
 }
 
 #[derive(Debug)]
-struct BagLink (usize, u32);
+struct BagLink(usize, u32);
 
 fn find_nth(s: &str, c: char, n: usize) -> usize {
     let mut n = n;
@@ -156,7 +155,8 @@ fn find_nth(s: &str, c: char, n: usize) -> usize {
 mod tests {
     use super::*;
 
-    const RS1_INPUT: &'static str = "light red bags contain 1 bright white bag, 2 muted yellow bags.
+    const RS1_INPUT: &'static str =
+        "light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
 bright white bags contain 1 shiny gold bag.
 muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.

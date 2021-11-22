@@ -23,7 +23,8 @@ pub fn load_input_bytes(name: &str) -> Vec<u8> {
 
     match File::open(format!("./input/{}.txt", name)) {
         Ok(mut file) => {
-            file.read_to_end(&mut buf).expect("Could not read file ./input/{}.txt");
+            file.read_to_end(&mut buf)
+                .expect("Could not read file ./input/{}.txt");
         }
         Err(e) => {
             panic!("Could not load file ./input/{}.txt: {}", name, e);
